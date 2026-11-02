@@ -62,6 +62,9 @@ func _setup_collision() -> void:
 		col.position = Vector3(0, 0.9, 0)
 		_hurtbox.add_child(col)
 		add_child(_hurtbox)
+	else:
+		if not _hurtbox.is_in_group("destructible"):
+			_hurtbox.add_to_group("destructible")
 
 func take_hit(attacker: Node = null) -> void:
 	if is_destroyed:

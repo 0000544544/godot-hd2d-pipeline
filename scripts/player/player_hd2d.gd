@@ -29,6 +29,7 @@ enum State {
 @export_group("Modèle 3D & Animation")
 @export var model_root: Node3D
 @export var anim_player: AnimationPlayer
+@export var sword_hitbox: Area3D
 
 var current_state: State = State.IDLE
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8) * 2.2
@@ -45,7 +46,6 @@ var _camera: HD2DCamera
 
 var current_interactable: Area3D = null
 var is_dialogue_open: bool = false
-var sword_hitbox: Area3D = null
 var _attack_hit_targets: Array = []
 
 func set_current_interactable(interactable: Area3D) -> void:
@@ -375,39 +375,38 @@ func _change_animation(anim_name: String, blend_time: float = 0.15, speed: float
 
 ## Initialise la zone de détection d'attaque (hitbox) sur la lame du Chevalier
 func _setup_sword_hitbox() -> void:
+	if not sword_hitbox:
+		if has_node("SwordHitbox"):
+			sword_hitbox = get_node("SwordHitbox") as Area3D
+		elif model_root:
+			var sword_bone = model_root.find_child("1H_Sword", true, false)
+			sword_hitbox = Area3D.new()
+			sword_hitbox.name = "SwordHitbox"
+			sword_hitbox.collision_layer = 0
+			sword_hitbox.collision_mask = 0xFFFFFFFF
+			sword_hitbox.monitoring = false
+			sword_hitbox.monitorable = false
+			
+			var col_shape = CollisionShape3D.new()
+			col_shape.name = "HitboxShape"
+			var box = BoxShape3D.new()
+			box.size = Vector3(0.7, 1.2, 0.7)
+			col_shape.shape = box
+			col_shape.position = Vector3(0, 0.45, 0)
+			sword_hitbox.add_child(col_shape)
+			
+			if sword_bone:
+				sword_bone.add_child(sword_hitbox)
+			else:
+				model_root.add_child(sword_hitbox)
+	
 	if sword_hitbox:
-		return
-	
-	var sword_bone = null
-	if model_root:
-		sword_bone = model_root.find_child("1H_Sword", true, false)
-	
-	sword_hitbox = Area3D.new()
-	sword_hitbox.name = "SwordHitbox"
-	sword_hitbox.collision_layer = 0
-	sword_hitbox.collision_mask = 0xFFFFFFFF
-	sword_hitbox.monitoring = false
-	sword_hitbox.monitorable = false
-	
-	var col_shape = CollisionShape3D.new()
-	col_shape.name = "HitboxShape"
-	var box = BoxShape3D.new()
-	box.size = Vector3(0.7, 1.2, 0.7)
-	col_shape.shape = box
-	col_shape.position = Vector3(0, 0.45, 0)
-	sword_hitbox.add_child(col_shape)
-	
-	if sword_bone:
-		sword_bone.add_child(sword_hitbox)
-	elif model_root:
-		col_shape.position = Vector3(0, 0.7, 1.0)
-		model_root.add_child(sword_hitbox)
-	else:
-		col_shape.position = Vector3(0, 0.7, 1.0)
-		add_child(sword_hitbox)
-	
-	sword_hitbox.area_entered.connect(_on_sword_hitbox_area_entered)
-	sword_hitbox.body_entered.connect(_on_sword_hitbox_body_entered)
+		sword_hitbox.monitoring = false
+		sword_hitbox.monitorable = false
+		if not sword_hitbox.area_entered.is_connected(_on_sword_hitbox_area_entered):
+			sword_hitbox.area_entered.connect(_on_sword_hitbox_area_entered)
+		if not sword_hitbox.body_entered.is_connected(_on_sword_hitbox_body_entered):
+			sword_hitbox.body_entered.connect(_on_sword_hitbox_body_entered)
 
 func _on_sword_hitbox_area_entered(area: Area3D) -> void:
 	_check_hit(area)
