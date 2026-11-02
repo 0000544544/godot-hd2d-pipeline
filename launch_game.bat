@@ -22,8 +22,13 @@ if not exist "%GODOT_EXE%" (
     exit /b 1
 )
 
+set "TARGET_SCENE=%~1"
+if "%TARGET_SCENE%"=="" (
+    set "TARGET_SCENE=res://scenes/main_hd2d_scene.tscn"
+)
+
 cd /d "%PROJECT_DIR%"
-start "" "%GODOT_EXE%" --path "%PROJECT_DIR%" "res://scenes/main_hd2d_scene.tscn"
+start "" "%GODOT_EXE%" --path "%PROJECT_DIR%" "%TARGET_SCENE%"
 
 endlocal
 exit /b 0
