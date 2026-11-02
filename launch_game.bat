@@ -1,10 +1,16 @@
 @echo off
 setlocal
 
+REM Arreter toute instance Godot precedente pour eviter les blocages
+taskkill /F /IM Godot* /T >nul 2>&1
+timeout /t 1 /nobreak >nul
+
 for %%I in ("%~dp0.") do set "BASE_DIR=%%~fI"
 
 set "PROJECT_DIR=%BASE_DIR%"
-if exist "%BASE_DIR%\godot-hd2d-pipeline\project.godot" (
+if exist "%BASE_DIR%\project.godot" (
+    set "PROJECT_DIR=%BASE_DIR%"
+) else if exist "%BASE_DIR%\godot-hd2d-pipeline\project.godot" (
     set "PROJECT_DIR=%BASE_DIR%\godot-hd2d-pipeline"
 )
 

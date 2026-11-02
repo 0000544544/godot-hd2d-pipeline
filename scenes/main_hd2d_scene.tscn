@@ -87,7 +87,7 @@ height = 1.4
 radius = 0.65
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
-size = Vector3(0.7, 1.2, 0.7)
+size = Vector3(1.6, 1.4, 1.6)
 
 [node name="MainHD2DScene" type="Node3D"]
 
@@ -365,7 +365,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CylinderShape_interact")
 
 [node name="Barrel_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -2.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 0.5)
 script = ExtResource("script_barrel")
 loot_type = 0
 
@@ -384,7 +384,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CylinderShape3D_barrel_solid")
 
 [node name="Barrel_Large" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -3.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, -1.2)
 script = ExtResource("script_barrel")
 loot_type = 1
 
@@ -452,23 +452,23 @@ shape = SubResource("BoxShape_chest")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2)
 script = ExtResource("3_ply")
 model_root = NodePath("Knight")
-sword_hitbox = NodePath("SwordHitbox")
+sword_hitbox = NodePath("Knight/SwordHitbox")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_player")
 
-[node name="SwordHitbox" type="Area3D" parent="Player"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.8)
-monitoring = false
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/SwordHitbox"]
-shape = SubResource("BoxShape3D_hitbox")
-
 [node name="Knight" parent="Player" instance=ExtResource("char_knight")]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 visible = true
+
+[node name="SwordHitbox" type="Area3D" parent="Player/Knight"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.85)
+monitoring = false
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/Knight/SwordHitbox"]
+shape = SubResource("BoxShape3D_hitbox")
 
 [node name="HD2DCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
 transform = Transform3D(1, 0, 0, 0, 0.848048, 0.529919, 0, -0.529919, 0.848048, 0, 9.5, 16)

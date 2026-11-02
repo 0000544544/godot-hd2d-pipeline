@@ -252,7 +252,7 @@ func _process_attack(delta: float) -> void:
 	velocity.z = move_toward(velocity.z, 0.0, friction * delta)
 
 	# Fenêtre active d'impact de l'épée durant l'animation 1H_Melee_Attack_Slice_Horizontal
-	var is_impact_frame: bool = (_attack_timer <= 0.38 and _attack_timer >= 0.12)
+	var is_impact_frame: bool = (_attack_timer <= 0.42 and _attack_timer >= 0.08)
 	if sword_hitbox:
 		sword_hitbox.monitoring = is_impact_frame
 		if is_impact_frame:
@@ -260,6 +260,10 @@ func _process_attack(delta: float) -> void:
 				_check_hit(a)
 			for b in sword_hitbox.get_overlapping_bodies():
 				_check_hit(b)
+
+	# Détection d'impact réactive dans le cône de frappe de l'épée
+	if is_impact_frame:
+		_check_forward_attack_cone()
 
 	if _attack_timer <= 0.0:
 		if sword_hitbox:
@@ -418,15 +422,20 @@ func _check_hit(target: Node) -> void:
 	if target in _attack_hit_targets:
 		return
 	
+	# Résolution robuste de l'entité destructible (prend en compte Hurtbox, Shape ou Root)
 	var destructible_target: Node = null
-	if target.is_in_group("destructible"):
-		destructible_target = target
-	elif target.get_parent() and target.get_parent().is_in_group("destructible"):
-		destructible_target = target.get_parent()
-	elif target.has_method("take_hit"):
+	if target.has_method("take_hit"):
 		destructible_target = target
 	elif target.get_parent() and target.get_parent().has_method("take_hit"):
 		destructible_target = target.get_parent()
+	elif target.is_in_group("destructible"):
+		if target.has_method("take_hit"):
+			destructible_target = target
+		elif target.get_parent() and target.get_parent().has_method("take_hit"):
+			destructible_target = target.get_parent()
+	elif target.get_parent() and target.get_parent().is_in_group("destructible"):
+		if target.get_parent().has_method("take_hit"):
+			destructible_target = target.get_parent()
 	
 	if destructible_target and not destructible_target in _attack_hit_targets:
 		_attack_hit_targets.append(target)
@@ -448,3 +457,19 @@ func _trigger_hitstop(duration: float = 0.04) -> void:
 	timer.timeout.connect(func():
 		Engine.time_scale = 1.0
 	)
+
+## Détecte les entités destructibles dans le cône d'attaque de l'épée
+func _check_forward_attack_cone() -> void:
+	var destructibles = get_tree().get_nodes_in_group("destructible")
+	for node in destructibles:
+		if not is_instance_valid(node):
+			continue
+		var target_pos = node.global_position
+		var to_target = target_pos - global_position
+		to_target.y = 0.0
+		var dist = to_target.length()
+		if dist <= 2.2:
+			var dir_norm = to_target.normalized()
+			var dot = _facing_direction.dot(dir_norm)
+			if dot >= 0.10 or dist <= 1.3:
+				_check_hit(node)
