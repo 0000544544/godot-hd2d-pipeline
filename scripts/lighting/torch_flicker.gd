@@ -51,10 +51,15 @@ func _setup_torch_particles(parent_node: Node) -> void:
 		var spark_mesh = BoxMesh.new()
 		spark_mesh.size = Vector3(0.035, 0.035, 0.035)
 		var spark_mat = StandardMaterial3D.new()
+		spark_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		spark_mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
 		spark_mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+		spark_mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		spark_mat.disable_receive_shadows = true
 		spark_mat.albedo_color = Color(2.6, 1.5, 0.35, 1.0) # Éclat HDR pour bloom
 		spark_mesh.material = spark_mat
 		_sparks_particles.mesh = spark_mesh
+		_sparks_particles.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_sparks_particles.position = Vector3(0, 1.05, 0)
 		parent_node.add_child.call_deferred(_sparks_particles)
 
@@ -80,10 +85,13 @@ func _setup_torch_particles(parent_node: Node) -> void:
 		smoke_mesh.height = 0.20
 		var smoke_mat = StandardMaterial3D.new()
 		smoke_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		smoke_mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
-		smoke_mat.albedo_color = Color(0.18, 0.18, 0.22, 0.25)
+		smoke_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		smoke_mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_DISABLED
+		smoke_mat.disable_receive_shadows = true
+		smoke_mat.albedo_color = Color(0.2, 0.2, 0.24, 0.16)
 		smoke_mesh.material = smoke_mat
 		_smoke_particles.mesh = smoke_mesh
+		_smoke_particles.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		_smoke_particles.position = Vector3(0, 1.18, 0)
 		parent_node.add_child.call_deferred(_smoke_particles)
 
