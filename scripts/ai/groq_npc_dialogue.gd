@@ -10,7 +10,7 @@ signal dialogue_received(reply_text: String)
 signal dialogue_error(error_message: String)
 
 @export var api_key: String = ""
-@export var model_name: String = "llama-3.3-70b-versatile"
+@export var model_name: String = "qwen/qwen3.8-27b"
 @export_multiline var system_prompt: String = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens au nord de la cour. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
 @export_range(0.0, 2.0) var temperature: float = 0.7
 
