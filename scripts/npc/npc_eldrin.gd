@@ -1,14 +1,16 @@
 class_name NPCEldrin
 extends StaticBody3D
 
-## Contrôleur d'animation et d'orientation pour le PNJ Maître Eldrin (Mage)
-## - Gère le bouclage automatique de l'animation d'attente (Idle)
-## - Oriente par défaut le mage vers le centre de la cour (rotation_degrees.y = -35°)
-## - Effectue une rotation fluide (lerp_angle vers le joueur) avec vitesse réglable (ex: 4.0 * delta)
+## Contrôleur d'animation, d'orientation et de dialogue pour Maître Eldrin (Mage)
+## - Bouclage forcé de l'animation d'attente (Idle)
+## - Orientation par défaut à -35° et suivi dynamique (lerp_angle vers le joueur)
+## - Déclenchement du dialogue IA [E] et connexion à DialogueBox & Groq Cloud
 
 @export var anim_player: AnimationPlayer
 @export var model_root: Node3D
 @export var player_target: Node3D
+@export var groq_client: GroqNPCDialogue
+@export var interactable: Area3D
 
 @export_group("Orientation & Regard Dynamique")
 @export var default_rotation_degrees: float = -35.0
@@ -16,6 +18,7 @@ extends StaticBody3D
 @export var rotation_speed: float = 4.0
 
 var _default_rotation_rad: float = 0.0
+var _dialogue_box: CanvasLayer = null
 
 func _ready() -> void:
 	if not model_root and has_node("Mage"):
@@ -23,6 +26,21 @@ func _ready() -> void:
 	
 	if not anim_player and model_root:
 		anim_player = model_root.find_child("AnimationPlayer", true, false)
+	
+	if not groq_client and has_node("GroqDialogueClient"):
+		groq_client = get_node("GroqDialogueClient") as GroqNPCDialogue
+	
+	if not interactable:
+		interactable = find_child("InteractableArea", true, false) as Area3D
+	
+	if interactable:
+		interactable.prompt_text = "[E] Parler"
+		interactable.prompt_offset = Vector3(0, 2.1, 0)
+		interactable.interacted.connect(_on_interacted)
+	
+	if groq_client:
+		groq_client.dialogue_received.connect(_on_dialogue_received)
+		groq_client.dialogue_error.connect(_on_dialogue_error)
 	
 	# Bouclage forcé de l'animation Idle
 	if anim_player and anim_player.has_animation("Idle"):
@@ -43,7 +61,6 @@ func _update_gaze(delta: float) -> void:
 	if not model_root:
 		return
 	
-	# Recherche automatique du joueur
 	if not player_target or not is_instance_valid(player_target):
 		player_target = get_node_or_null("../Player")
 		if not player_target:
@@ -65,3 +82,27 @@ func _update_gaze(delta: float) -> void:
 	# Interpolation angulaire douce sans à-coups
 	var weight: float = clampf(rotation_speed * delta, 0.0, 1.0)
 	model_root.rotation.y = lerp_angle(model_root.rotation.y, target_rot_y, weight)
+
+func _on_interacted(player: Node3D) -> void:
+	if not _dialogue_box:
+		_dialogue_box = get_tree().root.find_child("DialogueBox", true, false)
+	
+	if _dialogue_box and _dialogue_box.has_method("open_dialogue"):
+		_dialogue_box.open_dialogue("Maître Eldrin", "...", player)
+	
+	if groq_client:
+		groq_client.send_player_message("Salutations, Maître Eldrin.")
+	else:
+		_on_dialogue_received("Salutations, noble voyageur. Je veille sur ce sanctuaire antique.")
+
+func _on_dialogue_received(reply_text: String) -> void:
+	if not _dialogue_box:
+		_dialogue_box = get_tree().root.find_child("DialogueBox", true, false)
+	if _dialogue_box and _dialogue_box.get("is_active"):
+		_dialogue_box.display_text(reply_text)
+
+func _on_dialogue_error(error_msg: String) -> void:
+	if not _dialogue_box:
+		_dialogue_box = get_tree().root.find_child("DialogueBox", true, false)
+	if _dialogue_box and _dialogue_box.get("is_active"):
+		_dialogue_box.display_text("Les flux magiques sont perturbés... (" + error_msg + ")")

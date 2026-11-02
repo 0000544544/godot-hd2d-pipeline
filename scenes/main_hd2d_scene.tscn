@@ -21,6 +21,9 @@
 [ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="char_knight"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Mage.glb" id="char_mage"]
 [ext_resource type="Script" path="res://scripts/npc/npc_eldrin.gd" id="script_eldrin"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="script_interactable"]
+[ext_resource type="Script" path="res://scripts/props/gold_chest.gd" id="script_chest"]
+[ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script_dialogue"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FlameGlow"]
 shading_mode = 0
@@ -69,6 +72,10 @@ height = 1.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_npc"]
 size = Vector3(1, 1.8, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape_interact"]
+height = 2.5
+radius = 2.5
 
 [node name="MainHD2DScene" type="Node3D"]
 
@@ -332,7 +339,18 @@ script = ExtResource("6_flicker")
 [node name="Props" type="Node3D" parent="Courtyard"]
 
 [node name="Chest_Gold" parent="Courtyard/Props" instance=ExtResource("mod_chest")]
-transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -4.0, 0, -6.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -8)
+script = ExtResource("script_chest")
+interactable = NodePath("InteractableArea")
+
+[node name="InteractableArea" type="Area3D" parent="Courtyard/Props/Chest_Gold"]
+script = ExtResource("script_interactable")
+prompt_text = "[E] Ouvrir"
+prompt_offset = Vector3(0, 1.25, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Chest_Gold/InteractableArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape_interact")
 
 [node name="Barrel_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -2.0)
@@ -383,7 +401,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 4)
 shape = SubResource("BoxShape_pillar")
 
 [node name="CollisionChest" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.45, -6.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.45, -8)
 shape = SubResource("BoxShape_chest")
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root")]
@@ -407,10 +425,12 @@ fov = 36.0
 script = ExtResource("2_cam")
 target = NodePath("../Player")
 
-[node name="NPC_Eldrin" type="StaticBody3D" parent="." node_paths=PackedStringArray("model_root")]
+[node name="NPC_Eldrin" type="StaticBody3D" parent="." node_paths=PackedStringArray("model_root", "groq_client", "interactable")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.05, -2)
 script = ExtResource("script_eldrin")
 model_root = NodePath("Mage")
+groq_client = NodePath("GroqDialogueClient")
+interactable = NodePath("InteractableArea")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_Eldrin"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -420,6 +440,18 @@ shape = SubResource("BoxShape3D_npc")
 transform = Transform3D(1.02394, 0, 0.71697, 0, 1.25, 0, -0.71697, 0, 1.02394, 0, 0, 0)
 visible = true
 
+[node name="InteractableArea" type="Area3D" parent="NPC_Eldrin"]
+script = ExtResource("script_interactable")
+prompt_text = "[E] Parler"
+prompt_offset = Vector3(0, 2.1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_Eldrin/InteractableArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CylinderShape_interact")
+
 [node name="GroqDialogueClient" type="Node" parent="NPC_Eldrin"]
 script = ExtResource("4_ai")
-system_prompt = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens. Réponds avec sagesse et brièveté au voyageur qui t'aborde."
+system_prompt = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens au nord de la cour. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
+
+[node name="DialogueBox" type="CanvasLayer" parent="."]
+script = ExtResource("script_dialogue")

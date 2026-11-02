@@ -43,6 +43,16 @@ var _interact_timer: float = 0.0
 var _facing_direction: Vector3 = Vector3.FORWARD
 var _camera: HD2DCamera
 
+var current_interactable: Area3D = null
+var is_dialogue_open: bool = false
+
+func set_current_interactable(interactable: Area3D) -> void:
+	current_interactable = interactable
+
+func clear_current_interactable(interactable: Area3D) -> void:
+	if current_interactable == interactable:
+		current_interactable = null
+
 func _ready() -> void:
 	if not is_in_group("player"):
 		add_to_group("player")
@@ -77,6 +87,9 @@ func _setup_animation_loops() -> void:
 
 ## Détection discrète et réactive des actions (Dash, Attaque, Saut, Interaction)
 func _unhandled_input(event: InputEvent) -> void:
+	if is_dialogue_open:
+		return
+	
 	if event is InputEventKey and event.is_pressed() and not event.is_echo():
 		# Dash : Touche Shift
 		if event.keycode == KEY_SHIFT or event.physical_keycode == KEY_SHIFT:
@@ -237,10 +250,13 @@ func _process_attack(delta: float) -> void:
 			_change_state(State.IDLE)
 
 func _process_interact(delta: float) -> void:
-	_interact_timer -= delta
 	velocity.x = move_toward(velocity.x, 0.0, friction * delta)
 	velocity.z = move_toward(velocity.z, 0.0, friction * delta)
 
+	if is_dialogue_open:
+		return
+
+	_interact_timer -= delta
 	if _interact_timer <= 0.0:
 		_change_state(State.IDLE)
 
@@ -292,12 +308,19 @@ func _try_jump() -> void:
 		_change_state(State.JUMP)
 
 func _try_interact() -> void:
-	if current_state == State.DASH or current_state == State.ATTACK:
+	if is_dialogue_open or current_state == State.DASH or current_state == State.ATTACK:
 		return
-	_change_state(State.INTERACT)
+	if current_interactable and current_interactable.is_interactable:
+		_change_state(State.INTERACT)
+		current_interactable.trigger_interaction(self)
+	else:
+		_change_state(State.INTERACT)
 
 ## Récupère le vecteur de déplacement ZQSD, WASD ou flèches
 func _get_input_direction() -> Vector2:
+	if is_dialogue_open:
+		return Vector2.ZERO
+	
 	var dir = Vector2.ZERO
 
 	# ZQSD (AZERTY) et WASD (QWERTY)

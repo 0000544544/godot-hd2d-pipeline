@@ -1,8 +1,9 @@
 class_name GroqNPCDialogue
 extends Node
 
-## Client de dialogue dynamique pour PNJ via l'API gratuite Groq Cloud
-## Modèles recommandés : "llama-3.3-70b-versatile" ou "gemma2-9b-it"
+## Client de dialogue dynamique pour PNJ via l'API Groq Cloud (Llama 3.3 70B)
+## Charge automatiquement GROQ_API_KEY depuis res://.env ou les variables d'environnement.
+## Fournit un fallback narratif riche en cas d'absence de clé ou d'erreur réseau.
 
 signal dialogue_started()
 signal dialogue_received(reply_text: String)
@@ -10,7 +11,7 @@ signal dialogue_error(error_message: String)
 
 @export var api_key: String = ""
 @export var model_name: String = "llama-3.3-70b-versatile"
-@export_multiline var system_prompt: String = "Tu es un garde de village fatigué mais protecteur dans un univers médiéval fantastique HD-2D. Réponds de manière concise (1 à 3 phrases maximum) et expressive."
+@export_multiline var system_prompt: String = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens au nord de la cour. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
 @export_range(0.0, 2.0) var temperature: float = 0.7
 
 var _http_request: HTTPRequest
@@ -18,16 +19,13 @@ var _conversation_history: Array = []
 const GROQ_URL: String = "https://api.groq.com/openai/v1/chat/completions"
 
 func _ready() -> void:
-	# Création dynamique du nœud HTTPRequest
 	_http_request = HTTPRequest.new()
 	add_child(_http_request)
 	_http_request.request_completed.connect(_on_request_completed)
 	
-	# Récupération de la clé depuis l'environnement si vide
 	if api_key.is_empty():
-		api_key = OS.get_environment("GROQ_API_KEY")
+		api_key = _get_api_key_from_env()
 
-	# Initialisation de l'historique avec le prompt système
 	reset_dialogue()
 
 func reset_dialogue() -> void:
@@ -35,16 +33,44 @@ func reset_dialogue() -> void:
 		{"role": "system", "content": system_prompt}
 	]
 
+func _get_api_key_from_env() -> String:
+	var key = OS.get_environment("GROQ_API_KEY")
+	if not key.is_empty():
+		return key.strip_edges()
+	
+	# Lecture dans res://.env
+	if FileAccess.file_exists("res://.env"):
+		var file = FileAccess.open("res://.env", FileAccess.READ)
+		if file:
+			while not file.eof_reached():
+				var line = file.get_line().strip_edges()
+				if line.begins_with("GROQ_API_KEY="):
+					var val = line.substr("GROQ_API_KEY=".length()).strip_edges()
+					if not val.is_empty() and not val.begins_with("#"):
+						return val
+	return ""
+
 ## Envoie un message du joueur au PNJ
 func send_player_message(player_text: String) -> void:
+	# Re-vérification de la clé au moment de l'appel
 	if api_key.is_empty():
-		var err = "Clé d'API Groq manquante. Définissez la variable d'environnement GROQ_API_KEY ou le paramètre api_key."
-		push_warning(err)
-		dialogue_error.emit(err)
+		api_key = _get_api_key_from_env()
+
+	dialogue_started.emit()
+
+	# Si aucune clé n'est configurée, fournir une réponse de lore immersive
+	if api_key.is_empty():
+		var fallbacks = [
+			"Salutations, noble voyageur. Les pierres de cette cour gardent la mémoire des siècles passés. Le coffre doré scellé au nord renferme une antique bénédiction : approche-toi et presse [E] pour l'ouvrir.\n\n[color=#e0a838]✦ Pour dialoguer avec l'IA Llama 3.3 en direct, renseignez GROQ_API_KEY dans votre fichier .env[/color]",
+			"La lumière des torches veille sur notre sanctuaire. Prends le temps d'éprouver ton épée et ton esquive, car le chemin est semé d'épreuves.\n\n[color=#e0a838]✦ Connectez votre clé Groq gratuite dans .env pour débloquer les échanges infinis.[/color]",
+			"Je suis Maître Eldrin, gardien des archives. Les runes s'agitent... Si tu cherches un trésor, dirige-toi vers le nord, près de l'arche brisée.\n\n[color=#e0a838]✦ GROQ_API_KEY activable dans godot-hd2d-pipeline/.env[/color]"
+		]
+		var chosen = fallbacks[randi() % fallbacks.size()]
+		var timer = get_tree().create_timer(0.35)
+		timer.timeout.connect(func(): dialogue_received.emit(chosen))
 		return
 
 	_conversation_history.append({"role": "user", "content": player_text})
-	dialogue_started.emit()
 
 	var headers = [
 		"Content-Type: application/json",
@@ -63,14 +89,13 @@ func send_player_message(player_text: String) -> void:
 	if error != OK:
 		var err_str = "Échec du déclenchement de la requête HTTP : " + str(error)
 		push_error(err_str)
-		dialogue_error.emit(err_str)
+		_emit_fallback_on_error()
 
 func _on_request_completed(_result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if response_code != 200:
 		var err_body = body.get_string_from_utf8()
-		var msg = "Erreur HTTP Groq (" + str(response_code) + ") : " + err_body
-		push_error(msg)
-		dialogue_error.emit(msg)
+		push_error("Erreur HTTP Groq (" + str(response_code) + ") : " + err_body)
+		_emit_fallback_on_error()
 		return
 
 	var parse_result = JSON.parse_string(body.get_string_from_utf8())
@@ -79,6 +104,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 		_conversation_history.append({"role": "assistant", "content": reply})
 		dialogue_received.emit(reply)
 	else:
-		var parse_err = "Format de réponse inattendu depuis l'API Groq."
-		push_error(parse_err)
-		dialogue_error.emit(parse_err)
+		_emit_fallback_on_error()
+
+func _emit_fallback_on_error() -> void:
+	dialogue_received.emit("Les échos éthérés faiblissent... Maître Eldrin hoche la tête avec gravité : 'La magie vacille, voyageur, mais ma foi en ta quête demeure inébranlable.'")
