@@ -1,0 +1,28 @@
+# Godot 4 binaries & portable tools
+tools/
+*.exe
+*.zip
+
+# Godot 4 cache and local files
+.godot/
+*.translation
+
+# Export presets & sensitive credentials
+.env
+.env.*
+!.env.example
+export_presets.cfg
+
+# Build output
+builds/
+exports/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS junk
+.DS_Store
+Thumbs.db

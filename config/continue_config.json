@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "title": "Gemini 1.5 Pro (Google Developer Program)",
+      "provider": "gemini",
+      "model": "gemini-1.5-pro-latest",
+      "apiKey": "YOUR_GEMINI_API_KEY"
+    },
+    {
+      "title": "Gemini 1.5 Flash (Ultra-rapide)",
+      "provider": "gemini",
+      "model": "gemini-1.5-flash-latest",
+      "apiKey": "YOUR_GEMINI_API_KEY"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "Gemini 1.5 Flash Autocomplete",
+    "provider": "gemini",
+    "model": "gemini-1.5-flash-latest",
+    "apiKey": "YOUR_GEMINI_API_KEY"
+  },
+  "customCommands": [
+    {
+      "name": "gdscript-review",
+      "prompt": "Analyse ce script GDScript selon les meilleures pratiques de Godot 4.3 (typage statique strict, signaux découplés, gestion de mémoire, optimisation du _process). Propose une version refactorisée sans altérer la logique.",
+      "description": "Refactoriser et typer le code GDScript"
+    },
+    {
+      "name": "generate-shader",
+      "prompt": "Génère un shader Godot 4.3 (spatial shader pour HD-2D ou canvas_item) avec des paramètres 'uniform' exposés dans l'inspecteur. Ajoute des commentaires explicatifs.",
+      "description": "Générer un shader stylisé Godot"
+    }
+  ]
+}

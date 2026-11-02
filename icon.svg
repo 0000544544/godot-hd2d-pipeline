@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#478cbf" />
+      <stop offset="100%" stop-color="#243447" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#grad)" />
+  <g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <!-- Isometric Cube / Kitbash foundation -->
+    <path d="M64 24 L100 44 L64 64 L28 44 Z" fill="#65b2e8" fill-opacity="0.3"/>
+    <path d="M28 44 L64 64 L64 104 L28 84 Z" fill="#3a7ba8" fill-opacity="0.4"/>
+    <path d="M100 44 L64 64 L64 104 L100 84 Z" fill="#24567a" fill-opacity="0.5"/>
+    <!-- 2D Pixel Sprite Symbol / HD-2D Spark -->
+    <circle cx="64" cy="50" r="8" fill="#ffd166" stroke="#fff" stroke-width="2"/>
+  </g>
+</svg>

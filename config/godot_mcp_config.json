@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "godot-ai": {
+      "command": "npx",
+      "args": ["-y", "@godot-ai/mcp-server"],
+      "env": {
+        "GODOT_PATH": "C:\\Program Files\\Godot\\Godot_v4.3-stable_win64.exe",
+        "PROJECT_PATH": "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\godot-hd2d-pipeline"
+      }
+    },
+    "godot-cli-bridge": {
+      "command": "python",
+      "args": ["config/godot_bridge_server.py"],
+      "env": {
+        "PROJECT_DIR": "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\godot-hd2d-pipeline"
+      }
+    }
+  }
+}
