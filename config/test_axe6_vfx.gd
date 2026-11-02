@@ -53,23 +53,16 @@ func _init() -> void:
 		assert(flame != null, "FlameCore manquant sur " + t_name)
 		print("✔ 3. Torche validée: ", t_name, " (Flicker, Sparks, Smoke, Cast Shadow OFF OK)")
 
-	# 4. Vérification Bassine de pierre & WaterPond découpé
-	var basin = scene.get_node_or_null("Courtyard/Props/Basin_Structure")
-	assert(basin != null, "Basin_Structure manquant dans Courtyard/Props")
-	var rim = basin.get_node_or_null("BasinRim") as MeshInstance3D
-	assert(rim != null, "BasinRim manquant dans Basin_Structure")
-	var basin_col = basin.get_node_or_null("SolidCollider") as StaticBody3D
-	assert(basin_col != null, "SolidCollider manquant sur la bassine")
-
+	# 4. Vérification WaterPond & Shader d'eau fluide DEPTH_TEXTURE
 	var pond = scene.get_node_or_null("Courtyard/Props/WaterPond") as MeshInstance3D
 	assert(pond != null, "WaterPond manquant dans Courtyard/Props")
-	assert(pond.mesh != null, "Mesh du WaterPond manquant")
+	assert(pond.mesh != null and pond.mesh is PlaneMesh, "Mesh du WaterPond doit être un PlaneMesh")
 	assert(pond.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "WaterPond cast_shadow doit être OFF")
 	var mat = pond.mesh.material as ShaderMaterial
 	assert(mat != null, "ShaderMaterial manquant sur WaterPond")
 	assert(mat.shader != null, "Shader GDShader manquant sur WaterPond")
-	assert(mat.get_shader_parameter("cutout_radius") != null, "Uniform cutout_radius manquant dans le shader")
-	print("✔ 4. Bassine & Shader d'eau sobre validés : cutout_radius=", mat.get_shader_parameter("cutout_radius"), " (Alignement géométrique & découpe OK)")
+	assert(mat.get_shader_parameter("foam_amount") != null, "Uniform foam_amount manquant dans le shader")
+	print("✔ 4. WaterPond & Shader d'eau fluide validés : foam_amount=", mat.get_shader_parameter("foam_amount"), " (Plan simple encastré, bords automatiques via DEPTH_TEXTURE)")
 
 	# 5. Vérification des particules atmosphériques (AtmosphericParticles)
 	var dust = scene.get_node_or_null("Courtyard/AtmosphericParticles") as CPUParticles3D
