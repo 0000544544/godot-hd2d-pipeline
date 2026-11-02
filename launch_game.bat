@@ -3,7 +3,7 @@ setlocal
 
 REM Arreter toute instance Godot precedente pour eviter les blocages
 taskkill /F /IM Godot* /T >nul 2>&1
-timeout /t 1 /nobreak >nul
+ping 127.0.0.1 -n 2 >nul
 
 for %%I in ("%~dp0.") do set "BASE_DIR=%%~fI"
 
