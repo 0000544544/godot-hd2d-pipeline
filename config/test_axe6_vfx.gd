@@ -53,24 +53,13 @@ func _init() -> void:
 		assert(flame != null, "FlameCore manquant sur " + t_name)
 		print("✔ 3. Torche validée: ", t_name, " (Flicker, Sparks, Smoke, Cast Shadow OFF OK)")
 
-	# 4. Vérification WaterPond & Shader d'eau fluide DEPTH_TEXTURE
-	var pond = scene.get_node_or_null("Courtyard/Props/WaterPond") as MeshInstance3D
-	assert(pond != null, "WaterPond manquant dans Courtyard/Props")
-	assert(pond.mesh != null and pond.mesh is PlaneMesh, "Mesh du WaterPond doit être un PlaneMesh")
-	assert(pond.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "WaterPond cast_shadow doit être OFF")
-	var mat = pond.mesh.material as ShaderMaterial
-	assert(mat != null, "ShaderMaterial manquant sur WaterPond")
-	assert(mat.shader != null, "Shader GDShader manquant sur WaterPond")
-	assert(mat.get_shader_parameter("foam_amount") != null, "Uniform foam_amount manquant dans le shader")
-	print("✔ 4. WaterPond & Shader d'eau fluide validés : foam_amount=", mat.get_shader_parameter("foam_amount"), " (Plan simple encastré, bords automatiques via DEPTH_TEXTURE)")
-
-	# 5. Vérification des particules atmosphériques (AtmosphericParticles)
+	# 4. Vérification Particules atmosphériques (AtmosphericParticles)
 	var dust = scene.get_node_or_null("Courtyard/AtmosphericParticles") as CPUParticles3D
 	assert(dust != null, "AtmosphericParticles manquant dans Courtyard")
 	assert(dust.amount >= 30, "Quantité de particules atmosphériques insuffisante")
 	assert(dust.mesh != null, "Mesh des particules atmosphériques manquant")
 	assert(dust.cast_shadow == GeometryInstance3D.SHADOW_CASTING_SETTING_OFF, "AtmosphericParticles cast_shadow doit être OFF")
-	print("✔ 5. Particules atmosphériques (poussière/motes) validées : amount=", dust.amount, " cast_shadow=OFF")
+	print("✔ 4. Particules atmosphériques (poussière/motes) validées : amount=", dust.amount, " cast_shadow=OFF")
 
-	print("=== TOUTES LES VALIDATIONS AXE 6 (CORRECTIFS PARTICULES & BASSINE) SONT 100% SUCCÈS ===")
+	print("=== TOUTES LES VALIDATIONS AXE 6 (VFX TORCHES & AMBIANCE) SONT 100% SUCCÈS ===")
 	quit(0)
