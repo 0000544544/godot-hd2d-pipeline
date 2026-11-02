@@ -3,17 +3,17 @@ extends StaticBody3D
 
 ## Contrôleur d'animation et d'orientation pour le PNJ Maître Eldrin (Mage)
 ## - Gère le bouclage automatique de l'animation d'attente (Idle)
-## - Oriente par défaut le mage vers le bas de la cour (rotation_degrees.y = -20°)
-## - Effectue une rotation fluide (lerp_angle) vers le Chevalier dès qu'il est à portée (< 5 m)
+## - Oriente par défaut le mage vers le centre de la cour (rotation_degrees.y = -35°)
+## - Effectue une rotation fluide (lerp_angle vers le joueur) avec vitesse réglable (ex: 4.0 * delta)
 
 @export var anim_player: AnimationPlayer
 @export var model_root: Node3D
 @export var player_target: Node3D
 
 @export_group("Orientation & Regard Dynamique")
-@export var default_rotation_degrees: float = -20.0
+@export var default_rotation_degrees: float = -35.0
 @export var detection_range: float = 5.0
-@export var rotation_speed: float = 3.5
+@export var rotation_speed: float = 4.0
 
 var _default_rotation_rad: float = 0.0
 
@@ -51,7 +51,7 @@ func _update_gaze(delta: float) -> void:
 			if players.size() > 0:
 				player_target = players[0]
 	
-	var target_rot_y: float = _default_rotation_rad
+	var target_rot_y: float = deg_to_rad(default_rotation_degrees)
 	
 	if player_target and is_instance_valid(player_target):
 		var to_player: Vector3 = player_target.global_position - global_position
@@ -60,8 +60,8 @@ func _update_gaze(delta: float) -> void:
 		
 		# Si le joueur est à moins de detection_range (5 mètres)
 		if distance <= detection_range and distance > 0.05:
-			# Calcule l'angle orienté vers le joueur
 			target_rot_y = atan2(to_player.x, to_player.z)
 	
-	# Interpolation angulaire douce pour éviter tout à-coup
-	model_root.rotation.y = lerp_angle(model_root.rotation.y, target_rot_y, rotation_speed * delta)
+	# Interpolation angulaire douce sans à-coups
+	var weight: float = clampf(rotation_speed * delta, 0.0, 1.0)
+	model_root.rotation.y = lerp_angle(model_root.rotation.y, target_rot_y, weight)

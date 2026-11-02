@@ -61,7 +61,7 @@ size = Vector3(1.5, 4, 22)
 size = Vector3(1.6, 4, 1.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape_chest"]
-size = Vector3(1.8, 1.1, 1.5)
+size = Vector3(1.3, 0.9, 0.9)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.4
@@ -181,21 +181,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -10)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -10)
 
 [node name="Walls_South" type="Node3D" parent="Courtyard"]
-
-[node name="Wall_S_01" parent="Courtyard/Walls_South" instance=ExtResource("mod_wall")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -8, -3.5, 10)
-
-[node name="Wall_S_02" parent="Courtyard/Walls_South" instance=ExtResource("mod_wall")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -4, -3.5, 10)
-
-[node name="Wall_S_Center" parent="Courtyard/Walls_South" instance=ExtResource("mod_wall_broken")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, -3.5, 10)
-
-[node name="Wall_S_03" parent="Courtyard/Walls_South" instance=ExtResource("mod_wall_broken")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 4, -3.5, 10)
-
-[node name="Wall_S_04" parent="Courtyard/Walls_South" instance=ExtResource("mod_wall")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 8, -3.5, 10)
 
 [node name="Walls_West" type="Node3D" parent="Courtyard"]
 
@@ -347,7 +332,7 @@ script = ExtResource("6_flicker")
 [node name="Props" type="Node3D" parent="Courtyard"]
 
 [node name="Chest_Gold" parent="Courtyard/Props" instance=ExtResource("mod_chest")]
-transform = Transform3D(0.939693, 0, -0.34202, 0, 1, 0, 0.34202, 0, 0.939693, 4.9, 0, -3.4)
+transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -4.0, 0, -6.0)
 
 [node name="Barrel_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -2.0)
@@ -398,7 +383,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 4)
 shape = SubResource("BoxShape_pillar")
 
 [node name="CollisionChest" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9, 0.55, -3.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0.45, -6.0)
 shape = SubResource("BoxShape_chest")
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root")]
@@ -432,7 +417,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("BoxShape3D_npc")
 
 [node name="Mage" parent="NPC_Eldrin" instance=ExtResource("char_mage")]
-transform = Transform3D(1.17462, 0, 0.42753, 0, 1.25, 0, -0.42753, 0, 1.17462, 0, 0, 0)
+transform = Transform3D(1.02394, 0, 0.71697, 0, 1.25, 0, -0.71697, 0, 1.02394, 0, 0, 0)
 visible = true
 
 [node name="GroqDialogueClient" type="Node" parent="NPC_Eldrin"]
