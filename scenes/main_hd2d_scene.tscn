@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://blu8jj26y2oyc"]
+[gd_scene load_steps=33 format=3 uid="uid://blu8jj26y2oyc"]
 
 [ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="1_env"]
 [ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="2_cam"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://scripts/npc/npc_eldrin.gd" id="script_eldrin"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="script_interactable"]
 [ext_resource type="Script" path="res://scripts/props/gold_chest.gd" id="script_chest"]
+[ext_resource type="Script" path="res://scripts/props/destructible_barrel.gd" id="script_barrel"]
 [ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script_dialogue"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FlameGlow"]
@@ -354,9 +355,13 @@ shape = SubResource("CylinderShape_interact")
 
 [node name="Barrel_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -2.0)
+script = ExtResource("script_barrel")
+loot_type = 0
 
 [node name="Barrel_Large" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.8, 0, -3.2)
+script = ExtResource("script_barrel")
+loot_type = 1
 
 [node name="WaterPond" type="MeshInstance3D" parent="Courtyard/Props"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.05, 5)

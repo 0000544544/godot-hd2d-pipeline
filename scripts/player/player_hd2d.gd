@@ -45,6 +45,8 @@ var _camera: HD2DCamera
 
 var current_interactable: Area3D = null
 var is_dialogue_open: bool = false
+var sword_hitbox: Area3D = null
+var _attack_hit_targets: Array = []
 
 func set_current_interactable(interactable: Area3D) -> void:
 	current_interactable = interactable
@@ -72,6 +74,7 @@ func _ready() -> void:
 			_camera = cam
 	
 	_setup_animation_loops()
+	_setup_sword_hitbox()
 	_change_state(State.IDLE)
 
 ## Configure le bouclage forcé (Animation.LOOP_LINEAR) sur les animations de locomotion
@@ -144,6 +147,9 @@ func _physics_process(delta: float) -> void:
 
 func _change_state(new_state: State) -> void:
 	current_state = new_state
+	if sword_hitbox and new_state != State.ATTACK:
+		sword_hitbox.monitoring = false
+	
 	match current_state:
 		State.IDLE:
 			_change_animation("Idle", 0.15)
@@ -156,6 +162,9 @@ func _change_state(new_state: State) -> void:
 			_change_animation("Dodge_Forward", 0.04, 1.35)
 		State.ATTACK:
 			_attack_timer = 0.48
+			_attack_hit_targets.clear()
+			if sword_hitbox:
+				sword_hitbox.monitoring = false
 			# Coup d'épée vif et percutant
 			_change_animation("1H_Melee_Attack_Slice_Horizontal", 0.05, 1.4)
 			if _attack_is_dash_slice:
@@ -242,7 +251,19 @@ func _process_attack(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, friction * delta)
 	velocity.z = move_toward(velocity.z, 0.0, friction * delta)
 
+	# Fenêtre active d'impact de l'épée durant l'animation 1H_Melee_Attack_Slice_Horizontal
+	var is_impact_frame: bool = (_attack_timer <= 0.38 and _attack_timer >= 0.12)
+	if sword_hitbox:
+		sword_hitbox.monitoring = is_impact_frame
+		if is_impact_frame:
+			for a in sword_hitbox.get_overlapping_areas():
+				_check_hit(a)
+			for b in sword_hitbox.get_overlapping_bodies():
+				_check_hit(b)
+
 	if _attack_timer <= 0.0:
+		if sword_hitbox:
+			sword_hitbox.monitoring = false
 		var input_dir = _get_input_direction()
 		if input_dir.length_squared() > 0.01:
 			_change_state(State.MOVE)
@@ -351,3 +372,80 @@ func _change_animation(anim_name: String, blend_time: float = 0.15, speed: float
 	if anim_player.current_animation == anim_name and anim_player.is_playing():
 		return
 	anim_player.play(anim_name, blend_time, speed)
+
+## Initialise la zone de détection d'attaque (hitbox) sur la lame du Chevalier
+func _setup_sword_hitbox() -> void:
+	if sword_hitbox:
+		return
+	
+	var sword_bone = null
+	if model_root:
+		sword_bone = model_root.find_child("1H_Sword", true, false)
+	
+	sword_hitbox = Area3D.new()
+	sword_hitbox.name = "SwordHitbox"
+	sword_hitbox.collision_layer = 0
+	sword_hitbox.collision_mask = 0xFFFFFFFF
+	sword_hitbox.monitoring = false
+	sword_hitbox.monitorable = false
+	
+	var col_shape = CollisionShape3D.new()
+	col_shape.name = "HitboxShape"
+	var box = BoxShape3D.new()
+	box.size = Vector3(0.7, 1.2, 0.7)
+	col_shape.shape = box
+	col_shape.position = Vector3(0, 0.45, 0)
+	sword_hitbox.add_child(col_shape)
+	
+	if sword_bone:
+		sword_bone.add_child(sword_hitbox)
+	elif model_root:
+		col_shape.position = Vector3(0, 0.7, 1.0)
+		model_root.add_child(sword_hitbox)
+	else:
+		col_shape.position = Vector3(0, 0.7, 1.0)
+		add_child(sword_hitbox)
+	
+	sword_hitbox.area_entered.connect(_on_sword_hitbox_area_entered)
+	sword_hitbox.body_entered.connect(_on_sword_hitbox_body_entered)
+
+func _on_sword_hitbox_area_entered(area: Area3D) -> void:
+	_check_hit(area)
+
+func _on_sword_hitbox_body_entered(body: Node3D) -> void:
+	_check_hit(body)
+
+func _check_hit(target: Node) -> void:
+	if target in _attack_hit_targets:
+		return
+	
+	var destructible_target: Node = null
+	if target.is_in_group("destructible"):
+		destructible_target = target
+	elif target.get_parent() and target.get_parent().is_in_group("destructible"):
+		destructible_target = target.get_parent()
+	elif target.has_method("take_hit"):
+		destructible_target = target
+	elif target.get_parent() and target.get_parent().has_method("take_hit"):
+		destructible_target = target.get_parent()
+	
+	if destructible_target and not destructible_target in _attack_hit_targets:
+		_attack_hit_targets.append(target)
+		_attack_hit_targets.append(destructible_target)
+		
+		# Feedback d'impact : Screen Shake & Hitstop
+		_trigger_hitstop(0.04)
+		if _camera and _camera.has_method("add_trauma"):
+			_camera.add_trauma(0.22)
+		
+		if destructible_target.has_method("take_hit"):
+			destructible_target.take_hit(self)
+		elif destructible_target.has_method("destroy"):
+			destructible_target.destroy(self)
+
+func _trigger_hitstop(duration: float = 0.04) -> void:
+	Engine.time_scale = 0.05
+	var timer = get_tree().create_timer(duration, true, false, true)
+	timer.timeout.connect(func():
+		Engine.time_scale = 1.0
+	)
