@@ -47,9 +47,9 @@ func is_chest_opened() -> bool:
 func get_effective_system_prompt() -> String:
 	var prompt = system_prompt
 	if is_chest_opened():
-		prompt += " Le chevalier vient tout juste d'ouvrir le coffre doré sous tes yeux. Réagis directement à cet événement, félicite-le ou mets-le en garde sur les secrets qu'il vient de libérer."
+		prompt += " Contexte dynamique : Le chevalier a ouvert le coffre doré de la cour. Réagis directement à cet événement, félicite-le ou mets-le en garde sur les secrets qu'il vient de libérer."
 	else:
-		prompt += " Le coffre doré ancestral dans la cour est toujours scellé. Tu peux éveiller la curiosité du chevalier à son sujet."
+		prompt += " Contexte dynamique : Le coffre doré de la cour est encore fermé et scellé. Tu peux éveiller la curiosité du chevalier à son sujet."
 	return prompt
 
 func reset_dialogue() -> void:
