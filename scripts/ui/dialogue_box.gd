@@ -2,14 +2,17 @@ class_name DialogueBox
 extends CanvasLayer
 
 ## Interface de dialogue médiévale HD-2D avec effet machine à écrire (Typewriter)
-## Bloque les déplacements du joueur pendant la conversation et supporte la fermeture par Espace/Échap.
+## Bloque les déplacements du joueur pendant la conversation et supporte la fermeture par Espace/Échap/E.
+## Masque automatiquement les invites d'interaction flottantes pendant la discussion.
 
+signal dialogue_opened()
 signal dialogue_closed()
 
 @export var typewriter_chars_per_second: float = 38.0
 
 var is_active: bool = false
 var _player: Node = null
+var _active_interactable: Area3D = null
 var _speaker_label: Label
 var _body_label: RichTextLabel
 var _footer_label: Label
@@ -82,7 +85,7 @@ func _build_ui_if_needed() -> void:
 	_footer_label.add_theme_font_size_override("font_size", 13)
 	vbox.add_child(_footer_label)
 
-func open_dialogue(speaker: String, text: String, player: Node = null) -> void:
+func open_dialogue(speaker: String, text: String, player: Node = null, interactable_source: Area3D = null) -> void:
 	_build_ui_if_needed()
 	is_active = true
 	visible = true
@@ -97,6 +100,26 @@ func open_dialogue(speaker: String, text: String, player: Node = null) -> void:
 		_player.set("is_dialogue_open", true)
 		if _player.has_method("_change_state"):
 			_player._change_state(5) # State.INTERACT
+	
+	# Référence à l'interactable source pour masquer son badge d'interaction
+	if interactable_source:
+		_active_interactable = interactable_source
+	elif _player and "current_interactable" in _player and _player.current_interactable:
+		_active_interactable = _player.current_interactable
+	
+	# Masquer explicitement le badge d'interaction
+	if _active_interactable and is_instance_valid(_active_interactable):
+		if _active_interactable.has_method("hide_prompt"):
+			_active_interactable.hide_prompt()
+		else:
+			var lbl = _active_interactable.find_child("PromptLabel", true, false)
+			if lbl:
+				lbl.visible = false
+	
+	# Masquer également tout autre badge interactable affiché à l'écran
+	get_tree().call_group("interactables", "hide_prompt")
+	
+	dialogue_opened.emit()
 	
 	_speaker_label.text = speaker
 	display_text(text)
@@ -129,6 +152,19 @@ func close_dialogue() -> void:
 		if _player.has_method("_change_state"):
 			_player._change_state(0) # State.IDLE
 		_player = null
+	
+	# Rétablir la visibilité du badge uniquement si le joueur se trouve toujours dans la zone de détection
+	if _active_interactable and is_instance_valid(_active_interactable):
+		if _active_interactable.has_method("restore_prompt"):
+			_active_interactable.restore_prompt()
+		else:
+			var lbl = _active_interactable.find_child("PromptLabel", true, false)
+			if lbl and _active_interactable.get("is_interactable") and _active_interactable.get("_current_player") != null:
+				lbl.visible = true
+		_active_interactable = null
+	
+	# Restaurer l'affichage pour tout interactable dont le joueur occupe toujours la zone
+	get_tree().call_group("interactables", "restore_prompt")
 	
 	dialogue_closed.emit()
 

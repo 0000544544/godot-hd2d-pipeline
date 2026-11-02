@@ -1,9 +1,10 @@
 class_name GroqNPCDialogue
 extends Node
 
-## Client de dialogue dynamique pour PNJ via l'API Groq Cloud (Llama 3.3 70B)
+## Client de dialogue dynamique pour PNJ via l'API Groq Cloud
+## Détecte dynamiquement l'état du coffre doré (scellé / ouvert) pour enrichir le prompt système.
 ## Charge automatiquement GROQ_API_KEY depuis res://.env ou les variables d'environnement.
-## Fournit un fallback narratif riche en cas d'absence de clé ou d'erreur réseau.
+## Fournit des replis narratifs immersifs en cas d'absence de clé ou d'erreur réseau.
 
 signal dialogue_started()
 signal dialogue_received(reply_text: String)
@@ -11,7 +12,8 @@ signal dialogue_error(error_message: String)
 
 @export var api_key: String = ""
 @export var model_name: String = "qwen/qwen3.8-27b"
-@export_multiline var system_prompt: String = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens au nord de la cour. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
+@export var chest_node: Node3D = null
+@export_multiline var system_prompt: String = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur ce lieu antique. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
 @export_range(0.0, 2.0) var temperature: float = 0.7
 
 var _http_request: HTTPRequest
@@ -28,9 +30,31 @@ func _ready() -> void:
 
 	reset_dialogue()
 
+func get_chest_node() -> Node:
+	if chest_node and is_instance_valid(chest_node):
+		return chest_node
+	var chest = get_tree().get_first_node_in_group("gold_chest")
+	if not chest:
+		chest = get_tree().root.find_child("Chest_Gold", true, false)
+	return chest
+
+func is_chest_opened() -> bool:
+	var chest = get_chest_node()
+	if chest and "is_opened" in chest:
+		return bool(chest.is_opened)
+	return false
+
+func get_effective_system_prompt() -> String:
+	var prompt = system_prompt
+	if is_chest_opened():
+		prompt += " Le chevalier vient tout juste d'ouvrir le coffre doré sous tes yeux. Réagis directement à cet événement, félicite-le ou mets-le en garde sur les secrets qu'il vient de libérer."
+	else:
+		prompt += " Le coffre doré ancestral dans la cour est toujours scellé. Tu peux éveiller la curiosité du chevalier à son sujet."
+	return prompt
+
 func reset_dialogue() -> void:
 	_conversation_history = [
-		{"role": "system", "content": system_prompt}
+		{"role": "system", "content": get_effective_system_prompt()}
 	]
 
 func _get_api_key_from_env() -> String:
@@ -50,7 +74,7 @@ func _get_api_key_from_env() -> String:
 						return val
 	return ""
 
-## Envoie un message du joueur au PNJ
+## Envoie un message du joueur au PNJ avec conscience dynamique de l'état du coffre
 func send_player_message(player_text: String) -> void:
 	# Re-vérification de la clé au moment de l'appel
 	if api_key.is_empty():
@@ -58,13 +82,28 @@ func send_player_message(player_text: String) -> void:
 
 	dialogue_started.emit()
 
-	# Si aucune clé n'est configurée, fournir une réponse de lore immersive
+	# Mise à jour immédiate du prompt système selon l'état actuel du coffre
+	var current_system_prompt = get_effective_system_prompt()
+	if _conversation_history.is_empty():
+		_conversation_history.append({"role": "system", "content": current_system_prompt})
+	else:
+		_conversation_history[0] = {"role": "system", "content": current_system_prompt}
+
+	# Si aucune clé n'est configurée, fournir une réponse de repli narrative adaptée
 	if api_key.is_empty():
-		var fallbacks = [
-			"Salutations, noble voyageur. Les pierres de cette cour gardent la mémoire des siècles passés. Le coffre doré scellé au nord renferme une antique bénédiction : approche-toi et presse [E] pour l'ouvrir.\n\n[color=#e0a838]✦ Pour dialoguer avec l'IA Llama 3.3 en direct, renseignez GROQ_API_KEY dans votre fichier .env[/color]",
-			"La lumière des torches veille sur notre sanctuaire. Prends le temps d'éprouver ton épée et ton esquive, car le chemin est semé d'épreuves.\n\n[color=#e0a838]✦ Connectez votre clé Groq gratuite dans .env pour débloquer les échanges infinis.[/color]",
-			"Je suis Maître Eldrin, gardien des archives. Les runes s'agitent... Si tu cherches un trésor, dirige-toi vers le nord, près de l'arche brisée.\n\n[color=#e0a838]✦ GROQ_API_KEY activable dans godot-hd2d-pipeline/.env[/color]"
-		]
+		var fallbacks = []
+		if is_chest_opened():
+			fallbacks = [
+				"Par les anciens dieux ! Tu as osé briser le scellé du coffre doré... Ce qui était endormi s'éveille. Prends garde aux bénédictions qui ressemblent à des malédictions, chevalier.",
+				"La lueur dorée du coffre baigne à nouveau les dalles du sanctuaire. Tu as fait preuve d'une témérité remarquable en libérant ses reliques.",
+				"Le trésor des temps anciens t'appartient désormais. Veille à ne point succomber à l'ivresse du pouvoir qu'il confère."
+			]
+		else:
+			fallbacks = [
+				"Salutations, noble voyageur. Les pierres de cette cour gardent la mémoire des siècles passés. Le coffre doré scellé au nord renferme une antique bénédiction : approche-toi et presse [E] pour l'ouvrir.\n\n[color=#e0a838]✦ Pour dialoguer avec l'IA en direct, renseignez GROQ_API_KEY dans votre fichier .env[/color]",
+				"La lumière des torches veille sur notre sanctuaire. Prends le temps d'éprouver ton épée et ton esquive, car le chemin est semé d'épreuves.\n\n[color=#e0a838]✦ Connectez votre clé Groq gratuite dans .env pour débloquer les échanges infinis.[/color]",
+				"Je suis Maître Eldrin, gardien des archives. Les runes s'agitent... Si tu cherches un trésor, dirige-toi vers le nord, près de l'arche brisée.\n\n[color=#e0a838]✦ GROQ_API_KEY activable dans godot-hd2d-pipeline/.env[/color]"
+			]
 		var chosen = fallbacks[randi() % fallbacks.size()]
 		var timer = get_tree().create_timer(0.35)
 		timer.timeout.connect(func(): dialogue_received.emit(chosen))
@@ -74,7 +113,8 @@ func send_player_message(player_text: String) -> void:
 
 	var headers = [
 		"Content-Type: application/json",
-		"Authorization: Bearer " + api_key
+		"Authorization: Bearer " + api_key,
+		"User-Agent: GodotGame/1.0"
 	]
 
 	var payload = {
@@ -107,4 +147,7 @@ func _on_request_completed(_result: int, response_code: int, _headers: PackedStr
 		_emit_fallback_on_error()
 
 func _emit_fallback_on_error() -> void:
-	dialogue_received.emit("Les échos éthérés faiblissent... Maître Eldrin hoche la tête avec gravité : 'La magie vacille, voyageur, mais ma foi en ta quête demeure inébranlable.'")
+	if is_chest_opened():
+		dialogue_received.emit("Maître Eldrin contemple la lueur dorée : 'Le sceau est rompu... Même si les flux éthérés vacillent, ton courage devant le coffre force le respect.'")
+	else:
+		dialogue_received.emit("Les échos éthérés faiblissent... Maître Eldrin hoche la tête avec gravité : 'La magie vacille, voyageur, mais ma foi en ta quête demeure inébranlable.'")

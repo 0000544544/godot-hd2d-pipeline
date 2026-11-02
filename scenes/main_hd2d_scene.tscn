@@ -451,7 +451,7 @@ shape = SubResource("CylinderShape_interact")
 
 [node name="GroqDialogueClient" type="Node" parent="NPC_Eldrin"]
 script = ExtResource("4_ai")
-system_prompt = "Tu es Maître Eldrin, l'archiviste du sanctuaire. Tu veilles sur le coffre doré scellé par les anciens au nord de la cour. Réponds avec sagesse, mystère et brièveté (1 à 3 phrases maximum) au chevalier qui t'aborde."
+chest_node = NodePath("../../Courtyard/Props/Chest_Gold")
 
 [node name="DialogueBox" type="CanvasLayer" parent="."]
 script = ExtResource("script_dialogue")

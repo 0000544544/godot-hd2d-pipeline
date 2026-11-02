@@ -14,6 +14,7 @@ var _label: Label3D
 var _current_player: Node3D = null
 
 func _ready() -> void:
+	add_to_group("interactables")
 	monitoring = true
 	monitorable = true
 	
@@ -48,14 +49,31 @@ func set_active(active: bool) -> void:
 	if not active and _label:
 		_label.visible = false
 
+func hide_prompt() -> void:
+	if _label:
+		_label.visible = false
+
+func restore_prompt() -> void:
+	if not is_interactable:
+		return
+	if _current_player != null and _label:
+		_label.text = prompt_text
+		_label.visible = true
+
+func is_player_in_range() -> bool:
+	return _current_player != null
+
 func _on_body_entered(body: Node3D) -> void:
 	if not is_interactable:
 		return
 	if body.is_in_group("player") or body.name == "Player":
 		_current_player = body
+		var dialogue_open: bool = false
+		if "is_dialogue_open" in body:
+			dialogue_open = bool(body.is_dialogue_open)
 		if _label:
 			_label.text = prompt_text
-			_label.visible = true
+			_label.visible = not dialogue_open
 		if body.has_method("set_current_interactable"):
 			body.set_current_interactable(self)
 

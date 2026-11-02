@@ -88,10 +88,13 @@ func _on_interacted(player: Node3D) -> void:
 		_dialogue_box = get_tree().root.find_child("DialogueBox", true, false)
 	
 	if _dialogue_box and _dialogue_box.has_method("open_dialogue"):
-		_dialogue_box.open_dialogue("Maître Eldrin", "...", player)
+		_dialogue_box.open_dialogue("Maître Eldrin", "...", player, interactable)
 	
 	if groq_client:
-		groq_client.send_player_message("Salutations, Maître Eldrin.")
+		var greeting = "Salutations, Maître Eldrin."
+		if groq_client.is_chest_opened():
+			greeting = "Maître Eldrin, j'ai ouvert le coffre doré scellé au nord de la cour."
+		groq_client.send_player_message(greeting)
 	else:
 		_on_dialogue_received("Salutations, noble voyageur. Je veille sur ce sanctuaire antique.")
 

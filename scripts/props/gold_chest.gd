@@ -6,6 +6,9 @@ extends Node3D
 ## - Déclenche la rotation d'ouverture du couvercle (-65°)
 ## - Libère une lueur dorée avec éclat lumineux
 ## - Désactive l'invite d'interaction pour empêcher toute réouverture
+## - Émet un signal chest_opened et maintient la variable accessible is_opened
+
+signal chest_opened()
 
 @export var interactable: Area3D
 @export var open_angle: float = -65.0
@@ -16,6 +19,7 @@ var _lid_node: Node3D = null
 var _glow_light: OmniLight3D = null
 
 func _ready() -> void:
+	add_to_group("gold_chest")
 	_lid_node = find_child("chest_gold_lid", true, false)
 	
 	if not interactable:
@@ -32,7 +36,10 @@ func _on_interacted(_player: Node3D) -> void:
 	open_chest()
 
 func open_chest() -> void:
+	if is_opened:
+		return
 	is_opened = true
+	chest_opened.emit()
 	
 	if not interactable:
 		interactable = find_child("InteractableArea", true, false)
