@@ -41,6 +41,9 @@ var _interact_timer: float = 0.0
 var _facing_direction: Vector3 = Vector3.FORWARD
 
 func _ready() -> void:
+	if not is_in_group("player"):
+		add_to_group("player")
+	
 	# Recherche automatique du modèle 3D et de son AnimationPlayer
 	if not model_root and has_node("Knight"):
 		model_root = get_node("Knight")
