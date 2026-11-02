@@ -95,9 +95,9 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_water")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_water"]
 material = SubResource("ShaderMaterial_water")
-size = Vector2(3.5, 3.5)
-subdivide_width = 16
-subdivide_depth = 16
+size = Vector2(4.1, 4.1)
+subdivide_width = 24
+subdivide_depth = 24
 
 [sub_resource type="BoxShape3D" id="BoxShape_floor"]
 size = Vector3(22, 1, 22)
@@ -195,7 +195,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
 [node name="Floor_13" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
 
 [node name="Floor_14" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.22, 0)
 
 [node name="Floor_15" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
@@ -616,7 +616,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CylinderShape3D_barrel_solid")
 
 [node name="WaterPond" type="MeshInstance3D" parent="Courtyard/Props"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.2, 0.015, 4.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.02, 0)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_water")
 
