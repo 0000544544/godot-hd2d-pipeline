@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://blu8jj26y2oyc"]
+[gd_scene load_steps=38 format=3 uid="uid://blu8jj26y2oyc"]
 
 [ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="1_env"]
 [ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="2_cam"]
@@ -20,11 +20,13 @@
 [ext_resource type="PackedScene" uid="uid://b3qqg7mhl0i8c" path="res://assets/models/wall_broken.glb" id="mod_wall_broken"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="char_knight"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Mage.glb" id="char_mage"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Warrior.glb" id="char_skeleton"]
 [ext_resource type="Script" path="res://scripts/npc/npc_eldrin.gd" id="script_eldrin"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="script_interactable"]
 [ext_resource type="Script" path="res://scripts/props/gold_chest.gd" id="script_chest"]
 [ext_resource type="Script" path="res://scripts/props/destructible_barrel.gd" id="script_barrel"]
 [ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script_dialogue"]
+[ext_resource type="Script" path="res://scripts/enemy/enemy_skeleton.gd" id="script_skeleton"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FlameGlow"]
 shading_mode = 0
@@ -706,3 +708,16 @@ chest_node = NodePath("../../Courtyard/Props/Chest_Gold")
 
 [node name="DialogueBox" type="CanvasLayer" parent="."]
 script = ExtResource("script_dialogue")
+
+[node name="Enemy_Skeleton" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.05, -2.5)
+script = ExtResource("script_skeleton")
+model_root = NodePath("Skeleton_Warrior")
+player_target = NodePath("../Player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Skeleton_Warrior" parent="Enemy_Skeleton" instance=ExtResource("char_skeleton")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
