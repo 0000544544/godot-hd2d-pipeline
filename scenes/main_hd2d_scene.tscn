@@ -1,10 +1,9 @@
-[gd_scene load_steps=38 format=3 uid="uid://blu8jj26y2oyc"]
+[gd_scene load_steps=42 format=3 uid="uid://blu8jj26y2oyc"]
 
 [ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="1_env"]
 [ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="2_cam"]
 [ext_resource type="Script" path="res://scripts/player/player_hd2d.gd" id="3_ply"]
 [ext_resource type="Script" path="res://scripts/ai/groq_npc_dialogue.gd" id="4_ai"]
-[ext_resource type="Shader" path="res://shaders/stylized_water.gdshader" id="5_water"]
 [ext_resource type="Script" path="res://scripts/lighting/torch_flicker.gd" id="6_flicker"]
 [ext_resource type="CameraAttributesPractical" path="res://scenes/camera_attributes.tres" id="cam_attr"]
 [ext_resource type="PackedScene" uid="uid://ws5n7x3mse63" path="res://assets/models/barrel_large.glb" id="mod_barrel"]
@@ -14,6 +13,8 @@
 [ext_resource type="PackedScene" uid="uid://qq3bvi5as7jy" path="res://assets/models/floor_tile_large_rocks.glb" id="mod_floor_rocks"]
 [ext_resource type="PackedScene" uid="uid://c0d17pycmi14v" path="res://assets/models/pillar.glb" id="mod_pillar"]
 [ext_resource type="PackedScene" uid="uid://colbltrpmd6v1" path="res://assets/models/pillar_decorated.glb" id="mod_pillar_dec"]
+[ext_resource type="PackedScene" path="res://assets/models/column.glb" id="mod_column"]
+[ext_resource type="PackedScene" path="res://assets/models/stairs_walled.glb" id="mod_stairs"]
 [ext_resource type="PackedScene" uid="uid://bdtcstu8ambig" path="res://assets/models/torch_lit.glb" id="mod_torch"]
 [ext_resource type="PackedScene" uid="uid://ba8e2ravuo8jw" path="res://assets/models/wall.glb" id="mod_wall"]
 [ext_resource type="PackedScene" uid="uid://c3m3gfntuv2cx" path="res://assets/models/wall_arched.glb" id="mod_wall_arched"]
@@ -21,10 +22,12 @@
 [ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="char_knight"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Mage.glb" id="char_mage"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Warrior.glb" id="char_skeleton"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Minion.glb" id="char_skeleton_minion"]
 [ext_resource type="Script" path="res://scripts/npc/npc_eldrin.gd" id="script_eldrin"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="script_interactable"]
 [ext_resource type="Script" path="res://scripts/props/gold_chest.gd" id="script_chest"]
 [ext_resource type="Script" path="res://scripts/props/destructible_barrel.gd" id="script_barrel"]
+[ext_resource type="Script" path="res://scripts/props/spike_trap.gd" id="script_spiketrap"]
 [ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script_dialogue"]
 [ext_resource type="Script" path="res://scripts/enemy/enemy_skeleton.gd" id="script_skeleton"]
 
@@ -35,40 +38,30 @@ albedo_color = Color(2.5, 1.4, 0.4, 1)
 [sub_resource type="SphereMesh" id="Mesh_FlameGlow"]
 material = SubResource("Mat_FlameGlow")
 radius = 0.12
-height = 0.28
+height = 0.24
 
 [sub_resource type="StandardMaterial3D" id="Mat_TorchSparks"]
-transparency = 1
-blend_mode = 1
 shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(2.6, 1.5, 0.35, 1)
+albedo_color = Color(2.8, 1.8, 0.5, 1)
 
 [sub_resource type="BoxMesh" id="Mesh_TorchSparks"]
 material = SubResource("Mat_TorchSparks")
-size = Vector3(0.035, 0.035, 0.035)
+size = Vector3(0.04, 0.04, 0.04)
 
 [sub_resource type="StandardMaterial3D" id="Mat_TorchSmoke"]
 transparency = 1
-blend_mode = 0
 shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(0.2, 0.2, 0.24, 0.16)
+albedo_color = Color(0.2, 0.18, 0.16, 0.45)
 
 [sub_resource type="SphereMesh" id="Mesh_TorchSmoke"]
 material = SubResource("Mat_TorchSmoke")
-radius = 0.1
-height = 0.2
+radius = 0.15
+height = 0.3
 
 [sub_resource type="StandardMaterial3D" id="Mat_DustMotes"]
 transparency = 1
-blend_mode = 1
 shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(1.15, 0.95, 0.65, 0.35)
+albedo_color = Color(1, 0.9, 0.75, 0.4)
 
 [sub_resource type="SphereMesh" id="Mesh_DustMote"]
 material = SubResource("Mat_DustMotes")
@@ -76,19 +69,13 @@ radius = 0.025
 height = 0.05
 
 [sub_resource type="BoxShape3D" id="BoxShape_floor"]
-size = Vector3(22, 1, 22)
+size = Vector3(48, 1, 36)
 
-[sub_resource type="BoxShape3D" id="BoxShape_wall_horiz"]
-size = Vector3(22, 4, 1.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape_wall_vert"]
-size = Vector3(1.5, 4, 22)
-
-[sub_resource type="BoxShape3D" id="BoxShape_pillar"]
-size = Vector3(1.6, 4, 1.6)
+[sub_resource type="BoxShape3D" id="BoxShape_wall_thick"]
+size = Vector3(4, 4, 1.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape_chest"]
-size = Vector3(1.3, 0.9, 0.9)
+size = Vector3(1.6, 1.2, 1.2)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.4
@@ -102,12 +89,12 @@ height = 2.5
 radius = 2.5
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_barrel_hurtbox"]
-height = 1.8
-radius = 0.85
+height = 1.6
+radius = 0.75
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_barrel_solid"]
-height = 1.4
-radius = 0.65
+height = 1.3
+radius = 0.55
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.6, 1.4, 1.6)
@@ -116,540 +103,825 @@ size = Vector3(1.6, 1.4, 1.6)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("1_env")
-camera_attributes = ExtResource("cam_attr")
 
 [node name="SunDirectionalLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.819152, -0.40558, 0.395726, 0, 0.694658, 0.71934, -0.573576, -0.589248, 0.569036, 0, 18, 0)
-light_color = Color(1, 0.9, 0.78, 1)
-light_energy = 0.95
-light_volumetric_fog_energy = 2.4
+transform = Transform3D(0.866025, -0.286788, 0.409576, 0, 0.819152, 0.573576, -0.5, -0.496732, 0.709406, 0, 15, 0)
+light_color = Color(1, 0.92, 0.82, 1)
+light_energy = 0.55
+light_volumetric_fog_energy = 0.65
 shadow_enabled = true
-shadow_blur = 1.8
-directional_shadow_blend_splits = true
-directional_shadow_max_distance = 55.0
+shadow_bias = 0.04
+directional_shadow_max_distance = 60.0
 
 [node name="Courtyard" type="Node3D" parent="."]
 
 [node name="Floors" type="Node3D" parent="Courtyard"]
 
-[node name="Floor_01" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
+[node name="Floor_01" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -8)
 
-[node name="Floor_02" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -8)
+[node name="Floor_02" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -4)
 
 [node name="Floor_03" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 0)
 
-[node name="Floor_04" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -8)
+[node name="Floor_04" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 4)
 
-[node name="Floor_05" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
+[node name="Floor_05" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, 8)
 
-[node name="Floor_06" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
+[node name="Floor_06" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -8)
 
 [node name="Floor_07" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -4)
 
-[node name="Floor_08" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+[node name="Floor_08" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 0)
 
-[node name="Floor_09" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+[node name="Floor_09" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 4)
 
-[node name="Floor_10" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
+[node name="Floor_10" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 8)
 
-[node name="Floor_11" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+[node name="Floor_11" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -8)
 
-[node name="Floor_12" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+[node name="Floor_12" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -4)
 
 [node name="Floor_13" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
 
-[node name="Floor_14" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+[node name="Floor_14" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 4)
 
 [node name="Floor_15" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 8)
 
 [node name="Floor_16" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -16)
 
-[node name="Floor_17" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+[node name="Floor_17" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -12)
 
 [node name="Floor_18" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -8)
 
 [node name="Floor_19" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
 
 [node name="Floor_20" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
 
 [node name="Floor_21" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
 
 [node name="Floor_22" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 8)
 
 [node name="Floor_23" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -16)
 
-[node name="Floor_24" parent="Courtyard/Floors" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 8)
+[node name="Floor_24" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -12)
 
 [node name="Floor_25" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -8)
+
+[node name="Floor_26" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
+
+[node name="Floor_27" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+
+[node name="Floor_28" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+
+[node name="Floor_29" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 8)
+
+[node name="Floor_30" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
+
+[node name="Floor_31" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+
+[node name="Floor_32" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+
+[node name="Floor_33" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="Floor_34" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Floor_35" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="Floor_36" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+
+[node name="Floor_37" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -16)
+
+[node name="Floor_38" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -12)
+
+[node name="Floor_39" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -8)
+
+[node name="Floor_40" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+
+[node name="Floor_41" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="Floor_42" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+
+[node name="Floor_43" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 8)
+
+[node name="Floor_44" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -16)
+
+[node name="Floor_45" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -12)
+
+[node name="Floor_46" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
+
+[node name="Floor_47" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
+
+[node name="Floor_48" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+
+[node name="Floor_49" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
+
+[node name="Floor_50" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 8)
 
-[node name="Walls_North" type="Node3D" parent="Courtyard"]
+[node name="Floor_51" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
 
-[node name="Wall_N_01" parent="Courtyard/Walls_North" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -10)
+[node name="Floor_52" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
 
-[node name="Wall_N_02" parent="Courtyard/Walls_North" instance=ExtResource("mod_wall_broken")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -10)
+[node name="Floor_53" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
 
-[node name="Wall_N_Gate" parent="Courtyard/Walls_North" instance=ExtResource("mod_wall_arched")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -10)
+[node name="Floor_54" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 8)
 
-[node name="Wall_N_03" parent="Courtyard/Walls_North" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -10)
+[node name="Floor_55" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -4)
 
-[node name="Wall_N_04" parent="Courtyard/Walls_North" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -10)
+[node name="Floor_56" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)
 
-[node name="Walls_South" type="Node3D" parent="Courtyard"]
+[node name="Floor_57" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 4)
 
-[node name="Walls_West" type="Node3D" parent="Courtyard"]
+[node name="Floor_58" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 8)
 
-[node name="Wall_W_01" parent="Courtyard/Walls_West" instance=ExtResource("mod_wall")]
+[node name="Floor_59" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -4)
+
+[node name="Floor_60" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 0)
+
+[node name="Floor_61" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 4)
+
+[node name="Floor_62" parent="Courtyard/Floors" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 8)
+
+[node name="Walls" type="Node3D" parent="Courtyard"]
+
+[node name="Wall_Treas_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -18)
+
+[node name="Wall_Treas_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -18)
+
+[node name="Wall_Treas_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -18)
+
+[node name="Wall_Treas_N4" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -18)
+
+[node name="Wall_Treas_W1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -16)
+
+[node name="Wall_Treas_W2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -12)
+
+[node name="Wall_Treas_W3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -8)
 
-[node name="Wall_W_02" parent="Courtyard/Walls_West" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -4)
+[node name="Wall_Treas_E1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -16)
 
-[node name="Wall_W_03" parent="Courtyard/Walls_West" instance=ExtResource("mod_wall")]
+[node name="Wall_Treas_E2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -12)
+
+[node name="Wall_Treas_E3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -8)
+
+[node name="Wall_West_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -10)
+
+[node name="Wall_West_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -10)
+
+[node name="Wall_West_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
+
+[node name="Wall_West_W1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, -8)
+
+[node name="Wall_West_W2" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, -4)
+
+[node name="Wall_West_W3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 0)
+
+[node name="Wall_West_W4" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 4)
+
+[node name="Wall_West_W5" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 8)
+
+[node name="Gate_West_Wing" parent="Courtyard/Walls" instance=ExtResource("mod_wall_arched")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 0)
 
-[node name="Wall_W_04" parent="Courtyard/Walls_West" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 4)
+[node name="Wall_East_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)
 
-[node name="Wall_W_05" parent="Courtyard/Walls_West" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 8)
+[node name="Wall_East_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -6)
 
-[node name="Walls_East" type="Node3D" parent="Courtyard"]
+[node name="Wall_East_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -6)
 
-[node name="Wall_E_01" parent="Courtyard/Walls_East" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, -8)
+[node name="Wall_East_E1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, -4)
 
-[node name="Wall_E_02" parent="Courtyard/Walls_East" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, -4)
+[node name="Wall_East_E2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 0)
 
-[node name="Wall_E_03" parent="Courtyard/Walls_East" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 0)
+[node name="Wall_East_E3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 4)
 
-[node name="Wall_E_04" parent="Courtyard/Walls_East" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 4)
+[node name="Wall_East_E4" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 8)
 
-[node name="Wall_E_05" parent="Courtyard/Walls_East" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 8)
+[node name="Gate_East_Wing" parent="Courtyard/Walls" instance=ExtResource("mod_wall_arched")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 0)
 
 [node name="Pillars" type="Node3D" parent="Courtyard"]
 
-[node name="Corner_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, -10)
+[node name="Pillar_Center_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, 0)
 
-[node name="Corner_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)
+[node name="Pillar_Center_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, 0)
 
-[node name="Corner_SW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 10)
+[node name="Pillar_Center_SW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, 4.5)
 
-[node name="Corner_SE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 10)
+[node name="Pillar_Center_SE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, 4.5)
 
-[node name="Inner_Pillar_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
+[node name="Pillar_Entrance_Treas_L" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, -6.0)
 
-[node name="Inner_Pillar_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+[node name="Pillar_Entrance_Treas_R" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, -6.0)
 
-[node name="Inner_Pillar_SW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+[node name="Pillar_Dais_L" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -12.0)
 
-[node name="Inner_Pillar_SE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+[node name="Pillar_Dais_R" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -12.0)
+
+[node name="Pillar_Treas_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.0, 0, -16.0)
+
+[node name="Pillar_Treas_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.0, 0, -16.0)
+
+[node name="Pillar_Ruins_1" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, -4.0)
+
+[node name="Pillar_Ruins_2" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, 4.0)
+
+[node name="Column_Eldrin_1" parent="Courtyard/Pillars" instance=ExtResource("mod_column")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0, 0, -3.0)
+
+[node name="Column_Eldrin_2" parent="Courtyard/Pillars" instance=ExtResource("mod_column")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.0, 0, 3.0)
 
 [node name="TorchesAndLighting" type="Node3D" parent="Courtyard"]
 
-[node name="Torch_NW" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -3.2)
+[node name="Torch_Hall_NW" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, 0.4)
 
-[node name="FlameCore" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_NW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_NW" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_NW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 2.8
+light_volumetric_fog_energy = 0.5
 shadow_enabled = true
-shadow_blur = 1.4
 omni_range = 8.5
 omni_attenuation = 1.3
 script = ExtResource("6_flicker")
+base_energy = 2.8
 
-[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_NW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1999999999999997, 0)
 cast_shadow = 0
-amount = 14
-lifetime = 0.85
-preprocess = 0.5
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-tangential_accel_min = -1.2
-tangential_accel_max = 1.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_NW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-preprocess = 0.8
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 18.0
-gravity = Vector3(0, 0.85, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.1
-
-[node name="Torch_NE" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -3.2)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_NE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("Mesh_FlameGlow")
 
-[node name="Light_NE" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_NE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Hall_NE" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 0.4)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(1, 0.72, 0.42, 1)
+light_energy = 2.8
+light_volumetric_fog_energy = 0.5
 shadow_enabled = true
-shadow_blur = 1.4
 omni_range = 8.5
 omni_attenuation = 1.3
 script = ExtResource("6_flicker")
+base_energy = 2.8
 
-[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_NE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1999999999999997, 0)
 cast_shadow = 0
-amount = 14
-lifetime = 0.85
-preprocess = 0.5
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-tangential_accel_min = -1.2
-tangential_accel_max = 1.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_NE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-preprocess = 0.8
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 18.0
-gravity = Vector3(0, 0.85, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.1
-
-[node name="Torch_SW" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4.8)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_SW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 mesh = SubResource("Mesh_FlameGlow")
 
-[node name="Light_SW" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_SW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
-shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 8.5
-omni_attenuation = 1.3
-script = ExtResource("6_flicker")
-
-[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_SW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
-cast_shadow = 0
-amount = 14
-lifetime = 0.85
-preprocess = 0.5
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-tangential_accel_min = -1.2
-tangential_accel_max = 1.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_SW"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_NE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
 cast_shadow = 0
 amount = 8
-lifetime = 1.3
-preprocess = 0.8
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 18.0
-gravity = Vector3(0, 0.85, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.1
-
-[node name="Torch_SE" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4.8)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_SE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_SE" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_SE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
-shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 8.5
-omni_attenuation = 1.3
-script = ExtResource("6_flicker")
-
-[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_SE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
-cast_shadow = 0
-amount = 14
-lifetime = 0.85
-preprocess = 0.5
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
 mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
 direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-tangential_accel_min = -1.2
-tangential_accel_max = 1.2
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
 
-[node name="TorchSmoke" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_SE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-preprocess = 0.8
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 18.0
-gravity = Vector3(0, 0.85, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.1
+[node name="Torch_Hall_SW" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.6, 0, 4.1)
 
-[node name="Torch_Eldrin" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0, -2)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Eldrin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_Eldrin" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Eldrin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.72, 0.35, 1)
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(1, 0.75, 0.45, 1)
 light_energy = 2.6
-light_volumetric_fog_energy = 1.8
+light_volumetric_fog_energy = 0.5
 shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 7.5
-omni_attenuation = 1.2
+omni_range = 8.5
+omni_attenuation = 1.3
 script = ExtResource("6_flicker")
+base_energy = 2.6
 
-[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Eldrin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1999999999999997, 0)
 cast_shadow = 0
-amount = 14
-lifetime = 0.85
-preprocess = 0.5
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-tangential_accel_min = -1.2
-tangential_accel_max = 1.2
+mesh = SubResource("Mesh_FlameGlow")
 
-[node name="TorchSmoke" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Eldrin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SW"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
 cast_shadow = 0
 amount = 8
-lifetime = 1.3
-preprocess = 0.8
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
 direction = Vector3(0, 1, 0)
-spread = 18.0
-gravity = Vector3(0, 0.85, 0)
-initial_velocity_min = 0.5
-initial_velocity_max = 1.1
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Hall_SE" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6, 0, 4.1)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(1, 0.75, 0.45, 1)
+light_energy = 2.6
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 2.6
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1999999999999997, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Hall_SE"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Treasure_L" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0, 0, -12.0)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_L"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1.0, 0.85, 0.5, 1)
+light_energy = 3.2
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 3.2
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_L"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_L"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.35, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Treasure_R" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0, 0, -12.0)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_R"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1.0, 0.85, 0.5, 1)
+light_energy = 3.2
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 3.2
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_R"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Treasure_R"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.35, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Stairs" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0, -15.5)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 0)
+light_color = Color(1.0, 0.7, 0.35, 1)
+light_energy = 3.0
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 3.0
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.85, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Ruins_West" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, 0.0)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Ruins_West"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+light_color = Color(0.95, 0.65, 0.35, 1)
+light_energy = 2.8
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 2.8
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Ruins_West"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Ruins_West"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0500000000000003, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
+
+[node name="Torch_Sanctuary_Eldrin" parent="Courtyard/TorchesAndLighting" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.0, 0, -0.8)
+
+[node name="TorchLight" type="OmniLight3D" parent="Courtyard/TorchesAndLighting/Torch_Sanctuary_Eldrin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+light_color = Color(0.85, 0.65, 1.0, 1)
+light_energy = 3.0
+light_volumetric_fog_energy = 0.5
+shadow_enabled = true
+omni_range = 8.5
+omni_attenuation = 1.3
+script = ExtResource("6_flicker")
+base_energy = 3.0
+
+[node name="FlameGlow" type="MeshInstance3D" parent="Courtyard/TorchesAndLighting/Torch_Sanctuary_Eldrin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+cast_shadow = 0
+mesh = SubResource("Mesh_FlameGlow")
+
+[node name="TorchSparks" type="CPUParticles3D" parent="Courtyard/TorchesAndLighting/Torch_Sanctuary_Eldrin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0500000000000003, 0)
+cast_shadow = 0
+amount = 8
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.8
+mesh = SubResource("Mesh_TorchSparks")
+direction = Vector3(0, 1, 0)
+spread = 40.0
+gravity = Vector3(0, 1.5, 0)
+initial_velocity_min = 0.6
+initial_velocity_max = 1.4
 
 [node name="Props" type="Node3D" parent="Courtyard"]
 
+[node name="Stairs_Deep_Crypt" parent="Courtyard/Props" instance=ExtResource("mod_stairs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
+
 [node name="Chest_Gold" parent="Courtyard/Props" instance=ExtResource("mod_chest")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, -8)
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, -12.5)
 script = ExtResource("script_chest")
-interactable = NodePath("InteractableArea")
 
 [node name="InteractableArea" type="Area3D" parent="Courtyard/Props/Chest_Gold"]
 script = ExtResource("script_interactable")
-prompt_text = "[E] Ouvrir"
-prompt_offset = Vector3(0, 1.25, 0)
+prompt_text = "[E] Ouvrir le Coffre Royal"
+prompt_offset = Vector3(0, 1.4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Chest_Gold/InteractableArea"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CylinderShape_interact")
 
-[node name="Barrel_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 0.5)
+[node name="SpikeTrap_West" type="Node3D" parent="Courtyard/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, 0)
+script = ExtResource("script_spiketrap")
+
+[node name="Barrel_Hall_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 1.5)
 script = ExtResource("script_barrel")
 loot_type = 0
 
-[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Stack" groups=["destructible"]]
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Hall_Stack" groups=["destructible"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 collision_layer = 1
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Stack/Hurtbox"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Stack/Hurtbox"]
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
-[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Stack"]
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Hall_Stack"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Stack/SolidCollider"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Stack/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CylinderShape3D_barrel_solid")
 
-[node name="Barrel_Large" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, -1.2)
+[node name="Barrel_Hall_Large" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, -0.8)
 script = ExtResource("script_barrel")
 loot_type = 1
 
-[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Large" groups=["destructible"]]
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Hall_Large" groups=["destructible"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 collision_layer = 1
 collision_mask = 0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Large/Hurtbox"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Large/Hurtbox"]
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
-[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Large"]
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Hall_Large"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Large/SolidCollider"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Large/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CylinderShape3D_barrel_solid")
+
+[node name="Barrel_Treas_L" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0, -13.0)
+script = ExtResource("script_barrel")
+loot_type = 0
+
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Treas_L" groups=["destructible"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_L/Hurtbox"]
+shape = SubResource("CylinderShape3D_barrel_hurtbox")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Treas_L"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_L/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CylinderShape3D_barrel_solid")
+
+[node name="Barrel_Treas_R" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -13.0)
+script = ExtResource("script_barrel")
+loot_type = 1
+
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Treas_R" groups=["destructible"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_R/Hurtbox"]
+shape = SubResource("CylinderShape3D_barrel_hurtbox")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Treas_R"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_R/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CylinderShape3D_barrel_solid")
+
+[node name="Barrel_Ruins_Stack" parent="Courtyard/Props" instance=ExtResource("mod_barrel_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.0, 0, -6.0)
+script = ExtResource("script_barrel")
+loot_type = 0
+
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Ruins_Stack" groups=["destructible"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Stack/Hurtbox"]
+shape = SubResource("CylinderShape3D_barrel_hurtbox")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Ruins_Stack"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Stack/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CylinderShape3D_barrel_solid")
+
+[node name="Barrel_Ruins_Large" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.0, 0, 6.0)
+script = ExtResource("script_barrel")
+loot_type = 1
+
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Ruins_Large" groups=["destructible"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Large/Hurtbox"]
+shape = SubResource("CylinderShape3D_barrel_hurtbox")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Ruins_Large"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Large/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+shape = SubResource("CylinderShape3D_barrel_solid")
+
+[node name="Barrel_Sanctuary" parent="Courtyard/Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0, 0, 4.0)
+script = ExtResource("script_barrel")
+loot_type = 1
+
+[node name="Hurtbox" type="Area3D" parent="Courtyard/Props/Barrel_Sanctuary" groups=["destructible"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Sanctuary/Hurtbox"]
+shape = SubResource("CylinderShape3D_barrel_hurtbox")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Sanctuary"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Sanctuary/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CylinderShape3D_barrel_solid")
 
 [node name="StaticColliders" type="StaticBody3D" parent="Courtyard"]
 
 [node name="CollisionFloor" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -2)
 shape = SubResource("BoxShape_floor")
 
-[node name="CollisionWall_N" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -10)
-shape = SubResource("BoxShape_wall_horiz")
+[node name="Collision_N_Treasure" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -18.8)
+shape = SubResource("BoxShape_wall_thick")
 
-[node name="CollisionWall_S" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 10)
-shape = SubResource("BoxShape_wall_horiz")
+[node name="Collision_W_Boundary" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22.8, 2, 0)
+shape = SubResource("BoxShape_wall_thick")
 
-[node name="CollisionWall_W" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 2, 0)
-shape = SubResource("BoxShape_wall_vert")
+[node name="Collision_E_Boundary" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22.8, 2, 2)
+shape = SubResource("BoxShape_wall_thick")
 
-[node name="CollisionWall_E" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 2, 0)
-shape = SubResource("BoxShape_wall_vert")
-
-[node name="CollisionPillar_NW" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, -4)
-shape = SubResource("BoxShape_pillar")
-
-[node name="CollisionPillar_NE" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, -4)
-shape = SubResource("BoxShape_pillar")
-
-[node name="CollisionPillar_SW" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2, 4)
-shape = SubResource("BoxShape_pillar")
-
-[node name="CollisionPillar_SE" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2, 4)
-shape = SubResource("BoxShape_pillar")
-
-[node name="CollisionChest" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0.45, -8)
-shape = SubResource("BoxShape_chest")
+[node name="Collision_S_Boundary" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 10.8)
+shape = SubResource("BoxShape_wall_thick")
 
 [node name="AtmosphericParticles" type="CPUParticles3D" parent="Courtyard"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -2)
 cast_shadow = 0
-amount = 45
+amount = 35
 lifetime = 6.0
-preprocess = 2.0
 mesh = SubResource("Mesh_DustMote")
 emission_shape = 3
-emission_box_extents = Vector3(9, 2.5, 9)
-direction = Vector3(0.1, 0.2, 0.05)
-spread = 45.0
-gravity = Vector3(0, -0.02, 0)
+emission_box_extents = Vector3(20, 3.5, 16)
+direction = Vector3(0.1, -0.2, 0.1)
+spread = 40.0
+gravity = Vector3(0, -0.05, 0)
 initial_velocity_min = 0.1
-initial_velocity_max = 0.3
+initial_velocity_max = 0.4
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "sword_hitbox")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 5.0)
 script = ExtResource("3_ply")
 model_root = NodePath("Knight")
 sword_hitbox = NodePath("Knight/SwordHitbox")
@@ -660,7 +932,6 @@ shape = SubResource("CapsuleShape3D_player")
 
 [node name="Knight" parent="Player" instance=ExtResource("char_knight")]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
-visible = true
 
 [node name="SwordHitbox" type="Area3D" parent="Player/Knight"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0.85)
@@ -679,7 +950,7 @@ script = ExtResource("2_cam")
 target = NodePath("../Player")
 
 [node name="NPC_Eldrin" type="StaticBody3D" parent="." node_paths=PackedStringArray("model_root", "groq_client", "interactable")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0.05, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.0, 0.05, 0.0)
 script = ExtResource("script_eldrin")
 model_root = NodePath("Mage")
 groq_client = NodePath("GroqDialogueClient")
@@ -691,11 +962,10 @@ shape = SubResource("BoxShape3D_npc")
 
 [node name="Mage" parent="NPC_Eldrin" instance=ExtResource("char_mage")]
 transform = Transform3D(1.02394, 0, 0.71697, 0, 1.25, 0, -0.71697, 0, 1.02394, 0, 0, 0)
-visible = true
 
 [node name="InteractableArea" type="Area3D" parent="NPC_Eldrin"]
 script = ExtResource("script_interactable")
-prompt_text = "[E] Parler"
+prompt_text = "[E] Parler à Maître Eldrin"
 prompt_offset = Vector3(0, 2.1, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_Eldrin/InteractableArea"]
@@ -709,15 +979,34 @@ chest_node = NodePath("../../Courtyard/Props/Chest_Gold")
 [node name="DialogueBox" type="CanvasLayer" parent="."]
 script = ExtResource("script_dialogue")
 
-[node name="Enemy_Skeleton" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.05, -2.5)
+[node name="Enemy_Skeleton_Warrior" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.05, 0.0)
 script = ExtResource("script_skeleton")
 model_root = NodePath("Skeleton_Warrior")
 player_target = NodePath("../Player")
+max_health = 3
+patrol_distance = 4.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Warrior"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_player")
 
-[node name="Skeleton_Warrior" parent="Enemy_Skeleton" instance=ExtResource("char_skeleton")]
+[node name="Skeleton_Warrior" parent="Enemy_Skeleton_Warrior" instance=ExtResource("char_skeleton")]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+
+[node name="Enemy_Skeleton_Minion" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0.05, 4.0)
+script = ExtResource("script_skeleton")
+model_root = NodePath("Skeleton_Minion")
+player_target = NodePath("../Player")
+max_health = 2
+walk_speed = 2.2
+chase_speed = 3.8
+patrol_distance = 3.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Minion"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Skeleton_Minion" parent="Enemy_Skeleton_Minion" instance=ExtResource("char_skeleton_minion")]
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, 0)
