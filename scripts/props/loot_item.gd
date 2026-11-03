@@ -76,27 +76,38 @@ func _build_visuals() -> void:
 	_label_node.font_size = 28
 	_label_node.outline_size = 8
 	_label_node.outline_modulate = Color(0.05, 0.05, 0.08, 0.95)
-	_label_node.modulate = Color(1.0, 0.9, 0.4, 1.0) if loot_type == LootType.COIN else Color(1.0, 0.5, 0.6, 1.0)
-	_label_node.text = "+25 Or ✦" if loot_type == LootType.COIN else "+50 PV ❤"
+	_label_node.modulate = Color(1.0, 0.9, 0.4, 1.0) if loot_type == LootType.COIN else Color(0.4, 1.0, 0.5, 1.0)
+	_label_node.text = "+10 Or" if loot_type == LootType.COIN else "+2 PV"
 	_label_node.position = Vector3(0, 0.5, 0)
 	_label_node.visible = false
 	add_child(_label_node)
 
-func _play_spawn_pop_animation() -> void:
+func _play_spawn_pop_animation(scatter: Vector3 = Vector3.ZERO) -> void:
 	_is_popping = true
 	var start_y = position.y
 	_base_y = start_y + 0.38
 	
-	var tween = create_tween()
+	var tween = create_tween().set_parallel(true)
 	# Pop vers le haut
 	tween.tween_property(self, "position:y", start_y + 0.9, 0.24)\
 		.set_trans(Tween.TRANS_QUAD)\
 		.set_ease(Tween.EASE_OUT)
+	
+	if scatter != Vector3.ZERO:
+		tween.tween_property(self, "position:x", position.x + scatter.x, 0.54)\
+			.set_trans(Tween.TRANS_QUAD)\
+			.set_ease(Tween.EASE_OUT)
+		tween.tween_property(self, "position:z", position.z + scatter.z, 0.54)\
+			.set_trans(Tween.TRANS_QUAD)\
+			.set_ease(Tween.EASE_OUT)
+	
 	# Retombée douce avec rebond
-	tween.tween_property(self, "position:y", _base_y, 0.30)\
+	var y_tween = create_tween()
+	y_tween.tween_interval(0.24)
+	y_tween.tween_property(self, "position:y", _base_y, 0.30)\
 		.set_trans(Tween.TRANS_BOUNCE)\
 		.set_ease(Tween.EASE_OUT)
-	tween.tween_callback(func(): _is_popping = false)
+	y_tween.tween_callback(func(): _is_popping = false)
 
 func _process(delta: float) -> void:
 	if is_collected:
@@ -131,6 +142,13 @@ func collect(collector: Node3D) -> void:
 	if is_collected:
 		return
 	is_collected = true
+	
+	# Récompense immédiate du joueur
+	if collector:
+		if loot_type == LootType.COIN and collector.has_method("add_gold"):
+			collector.add_gold(10)
+		elif loot_type == LootType.POTION and collector.has_method("heal"):
+			collector.heal(2)
 	
 	# Afficher le badge flottant qui s'élève
 	if _label_node:

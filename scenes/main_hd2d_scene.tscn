@@ -1,5 +1,6 @@
-[gd_scene load_steps=42 format=3 uid="uid://blu8jj26y2oyc"]
+[gd_scene load_steps=52 format=3 uid="uid://blu8jj26y2oyc"]
 
+[ext_resource type="Script" path="res://scripts/main_hd2d_scene.gd" id="script_main_scene"]
 [ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="1_env"]
 [ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="2_cam"]
 [ext_resource type="Script" path="res://scripts/player/player_hd2d.gd" id="3_ply"]
@@ -22,6 +23,8 @@
 [ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="char_knight"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Mage.glb" id="char_mage"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Warrior.glb" id="char_skeleton"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Rogue.glb" id="char_skeleton_rogue"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Mage.glb" id="char_skeleton_mage"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Minion.glb" id="char_skeleton_minion"]
 [ext_resource type="Script" path="res://scripts/npc/npc_eldrin.gd" id="script_eldrin"]
 [ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="script_interactable"]
@@ -29,6 +32,7 @@
 [ext_resource type="Script" path="res://scripts/props/destructible_barrel.gd" id="script_barrel"]
 [ext_resource type="Script" path="res://scripts/props/spike_trap.gd" id="script_spiketrap"]
 [ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script_dialogue"]
+[ext_resource type="Script" path="res://scripts/ui/rpg_hud.gd" id="script_rpg_hud"]
 [ext_resource type="Script" path="res://scripts/enemy/enemy_skeleton.gd" id="script_skeleton"]
 
 [sub_resource type="StandardMaterial3D" id="Mat_FlameGlow"]
@@ -69,13 +73,26 @@ radius = 0.025
 height = 0.05
 
 [sub_resource type="BoxShape3D" id="BoxShape_floor"]
-size = Vector3(48, 1, 36)
+size = Vector3(56, 1, 44)
 
 [sub_resource type="BoxShape3D" id="BoxShape_wall_thick"]
 size = Vector3(4, 4, 1.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape_chest"]
-size = Vector3(1.6, 1.2, 1.2)
+[sub_resource type="BoxShape3D" id="BoxShape_wall_unit"]
+size = Vector3(4.0, 4.0, 1.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape_arch_pillar"]
+size = Vector3(1.1, 4.0, 1.0)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape_pillar"]
+height = 4.0
+radius = 0.65
+
+[sub_resource type="BoxShape3D" id="BoxShape_chest_solid"]
+size = Vector3(1.4, 1.1, 1.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape_stairs"]
+size = Vector3(4.0, 3.0, 4.0)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 radius = 0.4
@@ -99,7 +116,20 @@ radius = 0.55
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.6, 1.4, 1.6)
 
+[sub_resource type="BoxShape3D" id="BoxShape_Zone_GrandHall"]
+size = Vector3(22, 6, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape_Zone_Treasure"]
+size = Vector3(22, 6, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape_Zone_WestRuins"]
+size = Vector3(16, 6, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape_Zone_Sanctuary"]
+size = Vector3(16, 6, 16)
+
 [node name="MainHD2DScene" type="Node3D"]
+script = ExtResource("script_main_scene")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = ExtResource("1_env")
@@ -308,127 +338,463 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, 8)
 [node name="Wall_Treas_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -18)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_N1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_N1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_Treas_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -18)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_N2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_N2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_Treas_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -18)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_N3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_N3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_Treas_N4" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -18)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_N4"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_N4/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_Treas_W1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -16)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_W1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_W1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_Treas_W2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -12)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_W2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_W2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_Treas_W3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, -8)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_W3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_W3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_Treas_E1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -16)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_E1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_E1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_Treas_E2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -12)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_E2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_E2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_Treas_E3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, -8)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_Treas_E3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_Treas_E3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_West_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 0, -10)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_N1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_N1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_West_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -10)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_N2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_N2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_West_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -10)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_N3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_N3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_West_W1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, -8)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_W1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_W1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_West_W2" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, -4)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_W2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_W2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_West_W3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_W3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_W3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_West_W4" parent="Courtyard/Walls" instance=ExtResource("mod_wall_broken")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 4)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_W4"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_W4/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_West_W5" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -22, 0, 8)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_West_W5"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_West_W5/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Gate_West_Wing" parent="Courtyard/Walls" instance=ExtResource("mod_wall_arched")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -10, 0, 0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Gate_West_Wing"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="ColLeft" type="CollisionShape3D" parent="Courtyard/Walls/Gate_West_Wing/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 2.0, 0)
+shape = SubResource("BoxShape_arch_pillar")
+
+[node name="ColRight" type="CollisionShape3D" parent="Courtyard/Walls/Gate_West_Wing/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 2.0, 0)
+shape = SubResource("BoxShape_arch_pillar")
+
 [node name="Wall_East_N1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_N1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_N1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_East_N2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -6)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_N2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_N2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_East_N3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0, -6)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_N3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_N3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_East_E1" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, -4)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_E1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_E1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_East_E2" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_E2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_E2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
 
 [node name="Wall_East_E3" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 4)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_E3"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_E3/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Wall_East_E4" parent="Courtyard/Walls" instance=ExtResource("mod_wall")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 22, 0, 8)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Wall_East_E4"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Walls/Wall_East_E4/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("BoxShape_wall_unit")
+
 [node name="Gate_East_Wing" parent="Courtyard/Walls" instance=ExtResource("mod_wall_arched")]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0, 0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Walls/Gate_East_Wing"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="ColLeft" type="CollisionShape3D" parent="Courtyard/Walls/Gate_East_Wing/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45, 2.0, 0)
+shape = SubResource("BoxShape_arch_pillar")
+
+[node name="ColRight" type="CollisionShape3D" parent="Courtyard/Walls/Gate_East_Wing/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45, 2.0, 0)
+shape = SubResource("BoxShape_arch_pillar")
 
 [node name="Pillars" type="Node3D" parent="Courtyard"]
 
 [node name="Pillar_Center_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, 0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Center_NW"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Center_NW/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Center_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, 0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Center_NE"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Center_NE/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Pillar_Center_SW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, 4.5)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Center_SW"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Center_SW/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Center_SE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, 4.5)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Center_SE"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Center_SE/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Pillar_Entrance_Treas_L" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0, 0, -6.0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Entrance_Treas_L"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Entrance_Treas_L/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Entrance_Treas_R" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.0, 0, -6.0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Entrance_Treas_R"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Entrance_Treas_R/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Pillar_Dais_L" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -12.0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Dais_L"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Dais_L/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Dais_R" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar_dec")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -12.0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Dais_R"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Dais_R/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Pillar_Treas_NW" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.0, 0, -16.0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Treas_NW"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Treas_NW/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Treas_NE" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.0, 0, -16.0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Treas_NE"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Treas_NE/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Pillar_Ruins_1" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, -4.0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Ruins_1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Ruins_1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Pillar_Ruins_2" parent="Courtyard/Pillars" instance=ExtResource("mod_pillar")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0, 4.0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Pillar_Ruins_2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Pillar_Ruins_2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="Column_Eldrin_1" parent="Courtyard/Pillars" instance=ExtResource("mod_column")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.0, 0, -3.0)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Column_Eldrin_1"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Column_Eldrin_1/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
+
 [node name="Column_Eldrin_2" parent="Courtyard/Pillars" instance=ExtResource("mod_column")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.0, 0, 3.0)
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Pillars/Column_Eldrin_2"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Pillars/Column_Eldrin_2/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0)
+shape = SubResource("CylinderShape_pillar")
 
 [node name="TorchesAndLighting" type="Node3D" parent="Courtyard"]
 
@@ -734,9 +1100,25 @@ initial_velocity_max = 1.4
 [node name="Stairs_Deep_Crypt" parent="Courtyard/Props" instance=ExtResource("mod_stairs")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -18)
 
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Stairs_Deep_Crypt"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Stairs_Deep_Crypt/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape_stairs")
+
 [node name="Chest_Gold" parent="Courtyard/Props" instance=ExtResource("mod_chest")]
 transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, -12.5)
 script = ExtResource("script_chest")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Chest_Gold"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Chest_Gold/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+shape = SubResource("BoxShape_chest_solid")
 
 [node name="InteractableArea" type="Area3D" parent="Courtyard/Props/Chest_Gold"]
 script = ExtResource("script_interactable")
@@ -765,6 +1147,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Hall_Stack"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Stack/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -784,6 +1168,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Hall_Large"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Hall_Large/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -803,6 +1189,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Treas_L"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_L/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -822,6 +1210,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Treas_R"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Treas_R/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -841,6 +1231,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Ruins_Stack"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Stack/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -860,6 +1252,8 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Ruins_Large"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Ruins_Large/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
@@ -879,12 +1273,16 @@ collision_mask = 0
 shape = SubResource("CylinderShape3D_barrel_hurtbox")
 
 [node name="SolidCollider" type="StaticBody3D" parent="Courtyard/Props/Barrel_Sanctuary"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Courtyard/Props/Barrel_Sanctuary/SolidCollider"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 shape = SubResource("CylinderShape3D_barrel_solid")
 
 [node name="StaticColliders" type="StaticBody3D" parent="Courtyard"]
+collision_layer = 1
+collision_mask = 1
 
 [node name="CollisionFloor" type="CollisionShape3D" parent="Courtyard/StaticColliders"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -2)
@@ -922,6 +1320,8 @@ initial_velocity_max = 0.4
 
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "sword_hitbox")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 5.0)
+collision_layer = 1
+collision_mask = 1
 script = ExtResource("3_ply")
 model_root = NodePath("Knight")
 sword_hitbox = NodePath("Knight/SwordHitbox")
@@ -979,13 +1379,19 @@ chest_node = NodePath("../../Courtyard/Props/Chest_Gold")
 [node name="DialogueBox" type="CanvasLayer" parent="."]
 script = ExtResource("script_dialogue")
 
+[node name="RPGHUD" type="CanvasLayer" parent="."]
+script = ExtResource("script_rpg_hud")
+
 [node name="Enemy_Skeleton_Warrior" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.05, 0.0)
+collision_layer = 1
+collision_mask = 1
 script = ExtResource("script_skeleton")
-model_root = NodePath("Skeleton_Warrior")
-player_target = NodePath("../Player")
+skeleton_type = 0
 max_health = 3
 patrol_distance = 4.0
+model_root = NodePath("Skeleton_Warrior")
+player_target = NodePath("../Player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Warrior"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
@@ -994,15 +1400,59 @@ shape = SubResource("CapsuleShape3D_player")
 [node name="Skeleton_Warrior" parent="Enemy_Skeleton_Warrior" instance=ExtResource("char_skeleton")]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 
-[node name="Enemy_Skeleton_Minion" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.0, 0.05, 4.0)
+[node name="Enemy_Skeleton_Rogue" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0.05, -6.0)
+collision_layer = 1
+collision_mask = 1
 script = ExtResource("script_skeleton")
-model_root = NodePath("Skeleton_Minion")
+skeleton_type = 1
+max_health = 2
+walk_speed = 2.4
+chase_speed = 4.2
+patrol_distance = 3.5
+model_root = NodePath("Skeleton_Rogue")
 player_target = NodePath("../Player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Rogue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Skeleton_Rogue" parent="Enemy_Skeleton_Rogue" instance=ExtResource("char_skeleton_rogue")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+
+[node name="Enemy_Skeleton_Mage" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.0, 0.05, -3.0)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("script_skeleton")
+skeleton_type = 2
+max_health = 3
+walk_speed = 1.5
+chase_speed = 2.4
+attack_range = 6.5
+detection_range = 9.0
+model_root = NodePath("Skeleton_Mage")
+player_target = NodePath("../Player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Mage"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Skeleton_Mage" parent="Enemy_Skeleton_Mage" instance=ExtResource("char_skeleton_mage")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)
+
+[node name="Enemy_Skeleton_Minion" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "player_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.0, 0.05, 4.0)
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("script_skeleton")
+skeleton_type = 3
 max_health = 2
 walk_speed = 2.2
 chase_speed = 3.8
 patrol_distance = 3.5
+model_root = NodePath("Skeleton_Minion")
+player_target = NodePath("../Player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy_Skeleton_Minion"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
@@ -1010,3 +1460,37 @@ shape = SubResource("CapsuleShape3D_player")
 
 [node name="Skeleton_Minion" parent="Enemy_Skeleton_Minion" instance=ExtResource("char_skeleton_minion")]
 transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, 0)
+
+[node name="Zones" type="Node3D" parent="."]
+
+[node name="Zone_GrandHall" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 2)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/Zone_GrandHall"]
+shape = SubResource("BoxShape_Zone_GrandHall")
+
+[node name="Zone_Treasure" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -13)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/Zone_Treasure"]
+shape = SubResource("BoxShape_Zone_Treasure")
+
+[node name="Zone_WestRuins" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 3, 0)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/Zone_WestRuins"]
+shape = SubResource("BoxShape_Zone_WestRuins")
+
+[node name="Zone_Sanctuary" type="Area3D" parent="Zones"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 3, 1)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zones/Zone_Sanctuary"]
+shape = SubResource("BoxShape_Zone_Sanctuary")

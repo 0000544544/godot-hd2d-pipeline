@@ -14,6 +14,15 @@ enum State {
 	INTERACT
 }
 
+signal hp_changed(current: int, max_hp: int)
+signal gold_changed(total_gold: int)
+
+@export_group("RPG & Stats")
+@export var max_hp: int = 5
+var current_hp: int = 5
+var gold: int = 0
+var _invulnerability_timer: float = 0.0
+
 @export_group("Mouvement & Inertie")
 @export var move_speed: float = 6.0
 @export var acceleration: float = 28.0
@@ -76,6 +85,11 @@ func _ready() -> void:
 	_setup_animation_loops()
 	_setup_sword_hitbox()
 	_change_state(State.IDLE)
+	
+	# Initialisation des jauges RPG
+	current_hp = max_hp
+	hp_changed.emit(current_hp, max_hp)
+	gold_changed.emit(gold)
 
 ## Configure le bouclage forcé (Animation.LOOP_LINEAR) sur les animations de locomotion
 func _setup_animation_loops() -> void:
@@ -112,9 +126,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			_try_attack()
 
 func _physics_process(delta: float) -> void:
-	# Décompte du cooldown de dash
+	# Décompte du cooldown de dash et de l'invulnérabilité
 	if _dash_cooldown_timer > 0.0:
 		_dash_cooldown_timer -= delta
+	if _invulnerability_timer > 0.0:
+		_invulnerability_timer -= delta
 
 	# Application de la gravité sauf pendant le dash
 	if not is_on_floor() and current_state != State.DASH:
@@ -473,3 +489,97 @@ func _check_forward_attack_cone() -> void:
 			var dot = _facing_direction.dot(dir_norm)
 			if dot >= 0.10 or dist <= 1.3:
 				_check_hit(node)
+
+## =============================================================================
+## SYSTÈME RPG : SANTÉ, BUTIN & TEXTES FLOTTANTS
+## =============================================================================
+
+func take_damage(amount: int = 1) -> void:
+	if _invulnerability_timer > 0.0 or current_hp <= 0:
+		return
+	
+	_invulnerability_timer = 0.8
+	current_hp = max(0, current_hp - amount)
+	hp_changed.emit(current_hp, max_hp)
+	
+	# Texte flottant "-1 PV" en rouge montant doucement vers le haut
+	spawn_floating_text("-%d PV" % amount, global_position + Vector3(0, 1.3, 0), Color(1.0, 0.25, 0.25))
+	
+	# Shake caméra
+	if _camera and _camera.has_method("add_trauma"):
+		_camera.add_trauma(0.25)
+	
+	# Animation de recul si pas en plein dash / attaque
+	if current_state != State.DASH and current_state != State.ATTACK:
+		_change_animation("Hit_A", 0.05)
+	
+	# Clignotement rouge du modèle
+	_flash_damage()
+
+func take_hit(attacker: Node = null) -> void:
+	if attacker and is_instance_valid(attacker):
+		var kb = (global_position - attacker.global_position)
+		kb.y = 0.2
+		velocity += kb.normalized() * 3.5
+	take_damage(1)
+
+func heal(amount: int = 2) -> void:
+	if current_hp <= 0:
+		return
+	var old_hp = current_hp
+	current_hp = min(max_hp, current_hp + amount)
+	var gained = current_hp - old_hp
+	hp_changed.emit(current_hp, max_hp)
+	
+	# Texte flottant "+2 PV" en vert
+	spawn_floating_text("+%d PV" % (gained if gained > 0 else amount), global_position + Vector3(0, 1.3, 0), Color(0.25, 1.0, 0.45))
+
+func add_gold(amount: int) -> void:
+	gold += amount
+	gold_changed.emit(gold)
+	
+	if amount >= 100:
+		spawn_floating_text("+%d OR ROYAL !" % amount, global_position + Vector3(0, 1.5, 0), Color(1.0, 0.9, 0.2))
+	else:
+		spawn_floating_text("+%d Or" % amount, global_position + Vector3(0, 1.3, 0), Color(1.0, 0.84, 0.25))
+
+func spawn_floating_text(text: String, pos: Vector3 = Vector3.ZERO, col: Color = Color.WHITE) -> void:
+	if pos == Vector3.ZERO:
+		pos = global_position + Vector3(0, 1.4, 0)
+	
+	var label = Label3D.new()
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.no_depth_test = true
+	label.render_priority = 10
+	label.font_size = 32
+	label.outline_size = 8
+	label.outline_modulate = Color(0.02, 0.02, 0.05, 0.95)
+	label.modulate = col
+	label.text = text
+	
+	var parent_scene = get_tree().current_scene
+	if not parent_scene:
+		parent_scene = get_parent()
+	parent_scene.add_child(label)
+	label.global_position = pos
+	
+	var tween = label.create_tween().set_parallel(true)
+	# Montée douce
+	tween.tween_property(label, "global_position:y", pos.y + 1.3, 0.75)\
+		.set_trans(Tween.TRANS_CUBIC)\
+		.set_ease(Tween.EASE_OUT)
+	# Fondu en sortie
+	tween.tween_property(label, "modulate:a", 0.0, 0.45)\
+		.set_delay(0.30)
+	tween.chain().tween_callback(func():
+		label.queue_free()
+	)
+
+func _flash_damage() -> void:
+	if not model_root:
+		return
+	var tween = create_tween()
+	# Petit effet d'échelle / vibration
+	tween.tween_property(model_root, "scale", Vector3(1.4, 1.1, 1.4), 0.08)
+	tween.tween_property(model_root, "scale", Vector3(1.25, 1.25, 1.25), 0.12)
+

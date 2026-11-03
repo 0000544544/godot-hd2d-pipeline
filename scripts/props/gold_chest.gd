@@ -41,6 +41,11 @@ func open_chest() -> void:
 	is_opened = true
 	chest_opened.emit()
 	
+	# Récompenser le joueur avec le trésor royal (+100 Or)
+	var player = get_tree().get_first_node_in_group("player")
+	if player and player.has_method("add_gold"):
+		player.add_gold(100)
+	
 	if not interactable:
 		interactable = find_child("InteractableArea", true, false)
 	
