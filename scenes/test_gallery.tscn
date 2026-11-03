@@ -1,81 +1,14 @@
-[gd_scene load_steps=23 format=3 uid="uid://galleryhd2d001"]
+[gd_scene load_steps=7 format=3 uid="uid://galleryhd2d001"]
 
-[ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="1_env"]
 [ext_resource type="CameraAttributesPractical" path="res://scenes/camera_attributes.tres" id="cam_attr"]
 [ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="2_cam"]
 [ext_resource type="Script" path="res://scripts/player/player_hd2d.gd" id="3_ply"]
-[ext_resource type="Script" path="res://scripts/npc_patrol.gd" id="4_patrol"]
-[ext_resource type="Script" path="res://scripts/lighting/torch_flicker.gd" id="5_flicker"]
+[ext_resource type="Script" path="res://config/test_gallery.gd" id="gallery_script"]
 [ext_resource type="PackedScene" uid="uid://c5vbo0o118sjh" path="res://assets/models/floor_tile_large.glb" id="mod_floor"]
-[ext_resource type="PackedScene" uid="uid://qq3bvi5as7jy" path="res://assets/models/floor_tile_large_rocks.glb" id="mod_floor_rocks"]
-[ext_resource type="PackedScene" uid="uid://ba8e2ravuo8jw" path="res://assets/models/wall.glb" id="mod_wall"]
-[ext_resource type="PackedScene" uid="uid://c3m3gfntuv2cx" path="res://assets/models/wall_arched.glb" id="mod_wall_arched"]
-[ext_resource type="PackedScene" uid="uid://colbltrpmd6v1" path="res://assets/models/pillar_decorated.glb" id="mod_pillar_dec"]
-[ext_resource type="PackedScene" uid="uid://bdtcstu8ambig" path="res://assets/models/torch_lit.glb" id="mod_torch"]
 [ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="char_knight"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_walk_0.png" id="tex_walk_0"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_walk_1.png" id="tex_walk_1"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_walk_2.png" id="tex_walk_2"]
-[ext_resource type="Texture2D" path="res://assets/sprites/player_walk_3.png" id="tex_walk_3"]
-
-[sub_resource type="StandardMaterial3D" id="Mat_FlameGlow"]
-shading_mode = 0
-albedo_color = Color(2.5, 1.4, 0.4, 1)
-
-[sub_resource type="SphereMesh" id="Mesh_FlameGlow"]
-material = SubResource("Mat_FlameGlow")
-radius = 0.12
-height = 0.28
-
-[sub_resource type="StandardMaterial3D" id="Mat_TorchSparks"]
-transparency = 1
-blend_mode = 1
-shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(2.6, 1.5, 0.35, 1)
-
-[sub_resource type="BoxMesh" id="Mesh_TorchSparks"]
-material = SubResource("Mat_TorchSparks")
-size = Vector3(0.035, 0.035, 0.035)
-
-[sub_resource type="StandardMaterial3D" id="Mat_TorchSmoke"]
-transparency = 1
-blend_mode = 0
-shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(0.2, 0.2, 0.24, 0.16)
-
-[sub_resource type="SphereMesh" id="Mesh_TorchSmoke"]
-material = SubResource("Mat_TorchSmoke")
-radius = 0.1
-height = 0.2
-
-[sub_resource type="StandardMaterial3D" id="Mat_DustMotes"]
-transparency = 1
-blend_mode = 1
-shading_mode = 0
-depth_draw_mode = 2
-disable_receive_shadows = true
-albedo_color = Color(1.15, 0.95, 0.65, 0.35)
-
-[sub_resource type="SphereMesh" id="Mesh_DustMote"]
-material = SubResource("Mat_DustMotes")
-radius = 0.025
-height = 0.05
 
 [sub_resource type="BoxShape3D" id="BoxShape_floor"]
-size = Vector3(44, 1, 20)
-
-[sub_resource type="BoxShape3D" id="BoxShape_wall_north"]
-size = Vector3(40, 4, 1.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape_wall_south"]
-size = Vector3(40, 4, 1.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape_wall_side"]
-size = Vector3(1.5, 4, 16)
+size = Vector3(28, 1, 20)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_actor"]
 radius = 0.4
@@ -84,497 +17,82 @@ height = 1.6
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.6, 1.4, 1.6)
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_walk"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("tex_walk_0")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_walk_1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_walk_2")
-}, {
-"duration": 1.0,
-"texture": ExtResource("tex_walk_3")
-}],
-"loop": true,
-"name": &"walk",
-"speed": 6.0
-}]
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_hybrid"]
-viewport_path = NodePath("Room1_Hybrid/Demo_Hybrid/SubViewport")
-
 [node name="TestGalleryScene" type="Node3D"]
+script = ExtResource("gallery_script")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("1_env")
-camera_attributes = ExtResource("cam_attr")
+[node name="Floor" type="Node3D" parent="."]
 
-[node name="SunDirectionalLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.819152, -0.40558, 0.395726, 0, 0.694658, 0.71934, -0.573576, -0.589248, 0.569036, 0, 18, 0)
-light_color = Color(1, 0.9, 0.78, 1)
-light_energy = 0.95
-light_volumetric_fog_energy = 2.4
-shadow_enabled = true
-shadow_blur = 1.8
-directional_shadow_blend_splits = true
-directional_shadow_max_distance = 65.0
+[node name="Floor_01" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -4)
 
-[node name="AtmosphericParticles" type="CPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
-cast_shadow = 0
-amount = 65
-lifetime = 6.0
-preprocess = 2.0
-mesh = SubResource("Mesh_DustMote")
-emission_shape = 3
-emission_box_extents = Vector3(18, 2.5, 6)
-direction = Vector3(0.1, 0.2, 0.05)
-spread = 45.0
-gravity = Vector3(0, -0.02, 0)
-initial_velocity_min = 0.1
-initial_velocity_max = 0.3
+[node name="Floor_02" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
 
-[node name="GalleryStaticBody" type="StaticBody3D" parent="."]
+[node name="Floor_03" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
 
-[node name="FloorCollision" type="CollisionShape3D" parent="GalleryStaticBody"]
+[node name="Floor_04" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="Floor_05" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
+
+[node name="Floor_06" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
+
+[node name="Floor_07" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
+
+[node name="Floor_08" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+
+[node name="Floor_09" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+
+[node name="Floor_10" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
+
+[node name="Floor_11" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Floor_12" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+
+[node name="Floor_13" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+
+[node name="Floor_14" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+
+[node name="Floor_15" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 4)
+
+[node name="Floor_16" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
+
+[node name="Floor_17" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
+
+[node name="Floor_18" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="Floor_19" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
+
+[node name="Floor_20" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
+
+[node name="Floor_21" parent="Floor" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
+
+[node name="Walls" type="StaticBody3D" parent="."]
+
+[node name="FloorCollision" type="CollisionShape3D" parent="Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("BoxShape_floor")
 
-[node name="WallCollisionNorth" type="CollisionShape3D" parent="GalleryStaticBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -6.5)
-shape = SubResource("BoxShape_wall_north")
-
-[node name="WallCollisionSouth" type="CollisionShape3D" parent="GalleryStaticBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 6.5)
-shape = SubResource("BoxShape_wall_south")
-
-[node name="WallCollisionWest" type="CollisionShape3D" parent="GalleryStaticBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.5, 2, 0)
-shape = SubResource("BoxShape_wall_side")
-
-[node name="WallCollisionEast" type="CollisionShape3D" parent="GalleryStaticBody"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5, 2, 0)
-shape = SubResource("BoxShape_wall_side")
-
-[node name="Architecture" type="Node3D" parent="."]
-
-[node name="Floor_R1_01" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -4)
-
-[node name="Floor_R1_02" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -4)
-
-[node name="Floor_R1_03" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -4)
-
-[node name="Floor_R1_04" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 0)
-
-[node name="Floor_R1_05" parent="Architecture" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
-
-[node name="Floor_R1_06" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
-
-[node name="Floor_R1_07" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, 4)
-
-[node name="Floor_R1_08" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 4)
-
-[node name="Floor_R1_09" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 4)
-
-[node name="Floor_R2_01" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -4)
-
-[node name="Floor_R2_02" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
-
-[node name="Floor_R2_03" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -4)
-
-[node name="Floor_R2_04" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 0)
-
-[node name="Floor_R2_05" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-
-[node name="Floor_R2_06" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
-
-[node name="Floor_R2_07" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 4)
-
-[node name="Floor_R2_08" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
-
-[node name="Floor_R2_09" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
-
-[node name="Floor_R3_01" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -4)
-
-[node name="Floor_R3_02" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -4)
-
-[node name="Floor_R3_03" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -4)
-
-[node name="Floor_R3_04" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
-
-[node name="Floor_R3_05" parent="Architecture" instance=ExtResource("mod_floor_rocks")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
-
-[node name="Floor_R3_06" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 0)
-
-[node name="Floor_R3_07" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
-
-[node name="Floor_R3_08" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
-
-[node name="Floor_R3_09" parent="Architecture" instance=ExtResource("mod_floor")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, 4)
-
-[node name="Wall_N_01" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 0, -6)
-
-[node name="Wall_N_02" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -6)
-
-[node name="Wall_N_03" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -6)
-
-[node name="Wall_N_04" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, -6)
-
-[node name="Wall_N_05" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
-
-[node name="Wall_N_06" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -6)
-
-[node name="Wall_N_07" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -6)
-
-[node name="Wall_N_08" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -6)
-
-[node name="Wall_N_09" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -6)
-
-[node name="Wall_W_01" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, -4)
-
-[node name="Wall_W_02" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 0)
-
-[node name="Wall_W_03" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -18, 0, 4)
-
-[node name="Wall_E_01" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, -4)
-
-[node name="Wall_E_02" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 0)
-
-[node name="Wall_E_03" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 18, 0, 4)
-
-[node name="Arch_R1_R2" parent="Architecture" instance=ExtResource("mod_wall_arched")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 0)
-
-[node name="Wall_Sep_1_N" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, -4)
-
-[node name="Wall_Sep_1_S" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -6, 0, 4)
-
-[node name="Arch_R2_R3" parent="Architecture" instance=ExtResource("mod_wall_arched")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 0)
-
-[node name="Wall_Sep_2_N" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, -4)
-
-[node name="Wall_Sep_2_S" parent="Architecture" instance=ExtResource("mod_wall")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 4)
-
-[node name="Pillar_1" parent="Architecture" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -2)
-
-[node name="Pillar_2" parent="Architecture" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, 2)
-
-[node name="Pillar_3" parent="Architecture" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -2)
-
-[node name="Pillar_4" parent="Architecture" instance=ExtResource("mod_pillar_dec")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 2)
-
-[node name="Torches" type="Node3D" parent="."]
-
-[node name="Torch_R1" parent="Torches" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, -5.5)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Torches/Torch_R1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_R1" type="OmniLight3D" parent="Torches/Torch_R1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
-shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 8.5
-omni_attenuation = 1.3
-script = ExtResource("5_flicker")
-
-[node name="TorchSparks" type="CPUParticles3D" parent="Torches/Torch_R1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
-cast_shadow = 0
-amount = 14
-lifetime = 0.85
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Torches/Torch_R1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 15.0
-gravity = Vector3(0, 0.8, 0)
-initial_velocity_min = 0.4
-initial_velocity_max = 0.8
-
-[node name="Torch_R2" parent="Torches" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.5)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Torches/Torch_R2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_R2" type="OmniLight3D" parent="Torches/Torch_R2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
-shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 8.5
-omni_attenuation = 1.3
-script = ExtResource("5_flicker")
-
-[node name="TorchSparks" type="CPUParticles3D" parent="Torches/Torch_R2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
-cast_shadow = 0
-amount = 14
-lifetime = 0.85
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Torches/Torch_R2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 15.0
-gravity = Vector3(0, 0.8, 0)
-initial_velocity_min = 0.4
-initial_velocity_max = 0.8
-
-[node name="Torch_R3" parent="Torches" instance=ExtResource("mod_torch")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, -5.5)
-
-[node name="FlameCore" type="MeshInstance3D" parent="Torches/Torch_R3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-mesh = SubResource("Mesh_FlameGlow")
-
-[node name="Light_R3" type="OmniLight3D" parent="Torches/Torch_R3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-light_color = Color(1, 0.65, 0.28, 1)
-light_energy = 2.4
-light_volumetric_fog_energy = 1.6
-shadow_enabled = true
-shadow_blur = 1.4
-omni_range = 8.5
-omni_attenuation = 1.3
-script = ExtResource("5_flicker")
-
-[node name="TorchSparks" type="CPUParticles3D" parent="Torches/Torch_R3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
-cast_shadow = 0
-amount = 14
-lifetime = 0.85
-mesh = SubResource("Mesh_TorchSparks")
-emission_shape = 1
-emission_sphere_radius = 0.08
-direction = Vector3(0, 1, 0)
-spread = 28.0
-gravity = Vector3(0, 0.4, 0)
-initial_velocity_min = 1.2
-initial_velocity_max = 2.2
-
-[node name="TorchSmoke" type="CPUParticles3D" parent="Torches/Torch_R3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.18, 0)
-cast_shadow = 0
-amount = 8
-lifetime = 1.3
-mesh = SubResource("Mesh_TorchSmoke")
-emission_shape = 1
-emission_sphere_radius = 0.06
-direction = Vector3(0, 1, 0)
-spread = 15.0
-gravity = Vector3(0, 0.8, 0)
-initial_velocity_min = 0.4
-initial_velocity_max = 0.8
-
-[node name="Labels" type="Node3D" parent="."]
-
-[node name="Label_Room1" type="Label3D" parent="Labels"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3.2, -5.2)
-pixel_size = 0.0075
-billboard = 1
-double_sided = false
-modulate = Color(0.4, 0.9, 1, 1)
-outline_modulate = Color(0, 0.1, 0.2, 1)
-text = "[ PIÈCE 1 ]
-APPROCHE HYBRIDE (SubViewport 2D)
-Modèle 3D animé projeté en Billboard Nearest"
-font_size = 32
-outline_size = 8
-
-[node name="Label_Room2" type="Label3D" parent="Labels"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, -5.2)
-pixel_size = 0.0075
-billboard = 1
-double_sided = false
-modulate = Color(1, 0.85, 0.3, 1)
-outline_modulate = Color(0.2, 0.15, 0, 1)
-text = "[ PIÈCE 2 ]
-VRAI PIXEL-ART (AnimatedSprite3D)
-Sprite 2D traditionnel 8-dir en Billboard Y"
-font_size = 32
-outline_size = 8
-
-[node name="Label_Room3" type="Label3D" parent="Labels"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.2, -5.2)
-pixel_size = 0.0075
-billboard = 1
-double_sided = false
-modulate = Color(0.4, 1, 0.5, 1)
-outline_modulate = Color(0, 0.2, 0.05, 1)
-text = "[ PIÈCE 3 ]
-RENDU 3D DIRECT (Low-Poly)
-Modèle 3D classique natif sans conversion"
-font_size = 32
-outline_size = 8
-
-[node name="Room1_Hybrid" type="Node3D" parent="."]
-
-[node name="Demo_Hybrid" type="CharacterBody3D" parent="Room1_Hybrid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.05, -1)
-script = ExtResource("4_patrol")
-distance_patrouille = 4.0
-vitesse = 2.0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Room1_Hybrid/Demo_Hybrid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = SubResource("CapsuleShape3D_actor")
-
-[node name="SubViewport" type="SubViewport" parent="Room1_Hybrid/Demo_Hybrid"]
-transparent_bg = true
-size = Vector2i(128, 128)
-render_target_update_mode = 3
-
-[node name="VPCam" type="Camera3D" parent="Room1_Hybrid/Demo_Hybrid/SubViewport"]
-transform = Transform3D(1, 0, 0, 0, 0.965926, 0.258819, 0, -0.258819, 0.965926, 0, 1.1, 2.8)
-projection = 1
-size = 2.3
-
-[node name="VPLight" type="DirectionalLight3D" parent="Room1_Hybrid/Demo_Hybrid/SubViewport"]
-transform = Transform3D(0.8, -0.4, 0.4, 0, 0.7, 0.7, -0.6, -0.55, 0.55, 0, 2, 2)
-light_energy = 1.3
-
-[node name="Knight" parent="Room1_Hybrid/Demo_Hybrid/SubViewport" instance=ExtResource("char_knight")]
-transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
-
-[node name="Sprite3D" type="Sprite3D" parent="Room1_Hybrid/Demo_Hybrid"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-billboard = 2
-texture_filter = 0
-pixel_size = 0.016
-texture = SubResource("ViewportTexture_hybrid")
-
-[node name="Room2_PixelArt" type="Node3D" parent="."]
-
-[node name="Demo_PixelArt" type="CharacterBody3D" parent="Room2_PixelArt"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.05, -1)
-script = ExtResource("4_patrol")
-distance_patrouille = 4.0
-vitesse = 2.0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Room2_PixelArt/Demo_PixelArt"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = SubResource("CapsuleShape3D_actor")
-
-[node name="AnimatedSprite3D" type="AnimatedSprite3D" parent="Room2_PixelArt/Demo_PixelArt"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-billboard = 2
-texture_filter = 0
-pixel_size = 0.02
-sprite_frames = SubResource("SpriteFrames_walk")
-animation = &"walk"
-autoplay = "walk"
-
-[node name="Room3_Direct3D" type="Node3D" parent="."]
-
-[node name="Demo_Direct3D" type="CharacterBody3D" parent="Room3_Direct3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.05, -1)
-script = ExtResource("4_patrol")
-distance_patrouille = 4.0
-vitesse = 2.0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Room3_Direct3D/Demo_Direct3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
-shape = SubResource("CapsuleShape3D_actor")
-
-[node name="ModelRoot" type="Node3D" parent="Room3_Direct3D/Demo_Direct3D"]
-transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
-
-[node name="Knight" parent="Room3_Direct3D/Demo_Direct3D/ModelRoot" instance=ExtResource("char_knight")]
-
 [node name="Player" type="CharacterBody3D" parent="." node_paths=PackedStringArray("model_root", "sword_hitbox")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 2.5)
 script = ExtResource("3_ply")
 model_root = NodePath("Knight")
 sword_hitbox = NodePath("Knight/SwordHitbox")
