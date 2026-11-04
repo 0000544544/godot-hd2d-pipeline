@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://b2k8y1w4m9n3p"]
+
+[ext_resource type="Script" path="res://scripts/enemy/enemy_skeleton_3d.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Skeleton_Warrior.glb" id="2_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/enemy_hit.wav" id="3_sfx_hit"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_enemy"]
+radius = 0.45
+height = 1.8
+
+[node name="EnemySkeleton3D" type="CharacterBody3D" groups=["enemy"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_enemy")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Skeleton_Warrior" parent="Model" instance=ExtResource("2_model")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+
+[node name="SFXHit" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_sfx_hit")
+volume_db = 2.0
+max_distance = 25.0
+
+[node name="DamageLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+visible = false
+billboard = 1
+double_sided = false
+modulate = Color(1, 0.2, 0.2, 1)
+outline_modulate = Color(0, 0, 0, 1)
+text = "-1"
+font_size = 36
+outline_size = 6

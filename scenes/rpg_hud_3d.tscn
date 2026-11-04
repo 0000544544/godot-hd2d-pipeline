@@ -1,0 +1,268 @@
+[gd_scene load_steps=10 format=3 uid="uid://c8n1m4q7y9w2p"]
+
+[ext_resource type="Script" path="res://scripts/ui/rpg_hud_3d.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/ui/portraits/knight_portrait.png" id="2_knight_portrait"]
+[ext_resource type="Texture2D" path="res://assets/ui/portraits/npc_portrait.png" id="3_npc_portrait"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/sword_icon.png" id="4_sword_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/icons/potion_icon.png" id="5_potion_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud"]
+bg_color = Color(0.08, 0.08, 0.12, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.42, 0.38, 0.32, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.85, 0.15, 0.15, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mana_fill"]
+bg_color = Color(0.18, 0.45, 0.9, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_bg"]
+bg_color = Color(0.12, 0.12, 0.16, 0.9)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[node name="RPGHUD3D" type="CanvasLayer"]
+script = ExtResource("1_script")
+
+[node name="TopLeft" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 380.0
+offset_bottom = 130.0
+
+[node name="Panel" type="PanelContainer" parent="TopLeft"]
+layout_mode = 0
+offset_right = 360.0
+offset_bottom = 105.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="TopLeft/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="TextureRect" parent="TopLeft/Panel/HBox"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+texture = ExtResource("2_knight_portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBox" type="VBoxContainer" parent="TopLeft/Panel/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="HPBar" type="ProgressBar" parent="TopLeft/Panel/HBox/VBox"]
+custom_minimum_size = Vector2(210, 16)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+max_value = 5.0
+value = 5.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="TopLeft/Panel/HBox/VBox/HPBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 11
+text = "PV : 5 / 5"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ManaBar" type="ProgressBar" parent="TopLeft/Panel/HBox/VBox"]
+custom_minimum_size = Vector2(210, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_mana_fill")
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="TopLeft/Panel/HBox/VBox/ManaBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 10
+text = "Mana : 100 / 100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatsHBox" type="HBoxContainer" parent="TopLeft/Panel/HBox/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="GoldLabel" type="Label" parent="TopLeft/Panel/HBox/VBox/StatsHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.22, 1)
+theme_override_font_sizes/font_size = 12
+text = "✦ Or : 0"
+
+[node name="KillsLabel" type="Label" parent="TopLeft/Panel/HBox/VBox/StatsHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "☠ Vaincus : 0"
+
+[node name="CloudBadge" type="Label" parent="TopLeft/Panel/HBox/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.95, 0.55, 0.9)
+theme_override_font_sizes/font_size = 10
+text = "● Sauvegardé dans le Cloud (Supabase)"
+
+[node name="BottomRight" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -170.0
+offset_top = -95.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Panel" type="PanelContainer" parent="BottomRight"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="HBox" type="HBoxContainer" parent="BottomRight/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="SlotSword" type="PanelContainer" parent="BottomRight/Panel/HBox"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "Épée du Chevalier (+1 Dégât)"
+
+[node name="Icon" type="TextureRect" parent="BottomRight/Panel/HBox/SlotSword"]
+layout_mode = 2
+texture = ExtResource("4_sword_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SlotPotion" type="PanelContainer" parent="BottomRight/Panel/HBox"]
+custom_minimum_size = Vector2(56, 56)
+layout_mode = 2
+tooltip_text = "Potion de Soin (+3 PV)"
+
+[node name="Icon" type="TextureRect" parent="BottomRight/Panel/HBox/SlotPotion"]
+layout_mode = 2
+texture = ExtResource("5_potion_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="DialogueContainer" type="PanelContainer" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -215.0
+offset_right = 340.0
+offset_bottom = -25.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud")
+
+[node name="VBox" type="VBoxContainer" parent="DialogueContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HeaderHBox" type="HBoxContainer" parent="DialogueContainer/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="DialogueContainer/VBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.88, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+text = "Dialogue Arcanique"
+
+[node name="CloseButton" type="Button" parent="DialogueContainer/VBox/HeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = " [X] Fermer "
+
+[node name="ContentHBox" type="HBoxContainer" parent="DialogueContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Portrait" type="TextureRect" parent="DialogueContainer/VBox/ContentHBox"]
+custom_minimum_size = Vector2(90, 90)
+layout_mode = 2
+texture = ExtResource("3_npc_portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextVBox" type="VBoxContainer" parent="DialogueContainer/VBox/ContentHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpeakerName" type="Label" parent="DialogueContainer/VBox/ContentHBox/TextVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = "Maître Eldrin (Gardien de la Crypte)"
+
+[node name="DialogueText" type="RichTextLabel" parent="DialogueContainer/VBox/ContentHBox/TextVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "Approche, voyageur... Que cherches-tu dans les profondeurs de ce sanctuaire ?"
+
+[node name="InputHBox" type="HBoxContainer" parent="DialogueContainer/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayerInput" type="LineEdit" parent="DialogueContainer/VBox/InputHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 12
+placeholder_text = "Posez une question à Maître Eldrin..."
+
+[node name="SendButton" type="Button" parent="DialogueContainer/VBox/InputHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = " Envoyer "

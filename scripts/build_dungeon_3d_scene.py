@@ -1,0 +1,308 @@
+"""
+Générateur de la scène 3D complète res://scenes/dungeon_3d.tscn pour Godot 4.3.
+Action-RPG 3D Dark Fantasy Stylisé (Octopath 3D / Toon Dark Fantasy).
+"""
+import os
+
+SCENE_PATH = r"c:\Users\AymaneELHOMAIDI\Desktop\Projects\WadWAd\godot-hd2d-pipeline\scenes\dungeon_3d.tscn"
+
+tscn_content = """[gd_scene load_steps=32 format=3 uid="uid://ddun3d98y2m1a"]
+
+[ext_resource type="Script" path="res://scripts/main_dungeon_3d.gd" id="1_main"]
+[ext_resource type="Environment" uid="uid://bgqkfi1roieos" path="res://scenes/world_environment.tres" id="2_env"]
+[ext_resource type="CameraAttributesPractical" path="res://scenes/camera_attributes.tres" id="3_cam_attr"]
+[ext_resource type="Script" path="res://scripts/camera/hd2d_camera.gd" id="4_cam_script"]
+[ext_resource type="Script" path="res://scripts/lighting/torch_flicker.gd" id="5_torch_flicker"]
+[ext_resource type="Script" path="res://scripts/network/supabase_manager.gd" id="6_supabase"]
+[ext_resource type="Script" path="res://scripts/network/sentry_logger.gd" id="7_sentry"]
+[ext_resource type="Script" path="res://scripts/props/gold_chest.gd" id="8_chest_script"]
+[ext_resource type="Script" path="res://scripts/interaction/interactable.gd" id="9_interactable"]
+[ext_resource type="Script" path="res://scripts/props/destructible_barrel.gd" id="10_barrel_script"]
+[ext_resource type="PackedScene" uid="uid://c5vbo0o118sjh" path="res://assets/models/floor_tile_large.glb" id="mod_floor"]
+[ext_resource type="PackedScene" uid="uid://qq3bvi5as7jy" path="res://assets/models/floor_tile_large_rocks.glb" id="mod_floor_rocks"]
+[ext_resource type="PackedScene" uid="uid://ba8e2ravuo8jw" path="res://assets/models/wall.glb" id="mod_wall"]
+[ext_resource type="PackedScene" uid="uid://c3m3gfntuv2cx" path="res://assets/models/wall_arched.glb" id="mod_wall_arched"]
+[ext_resource type="PackedScene" uid="uid://c0d17pycmi14v" path="res://assets/models/pillar.glb" id="mod_pillar"]
+[ext_resource type="PackedScene" uid="uid://bdtcstu8ambig" path="res://assets/models/torch_lit.glb" id="mod_torch"]
+[ext_resource type="PackedScene" uid="uid://dww57qpcuybta" path="res://assets/models/chest_gold.glb" id="mod_chest"]
+[ext_resource type="PackedScene" uid="uid://ws5n7x3mse63" path="res://assets/models/barrel_large.glb" id="mod_barrel"]
+[ext_resource type="PackedScene" uid="uid://cum3e72byvvhu" path="res://assets/models/barrel_small_stack.glb" id="mod_barrel_stack"]
+[ext_resource type="PackedScene" uid="uid://bm8q1w3n5r7kp" path="res://scenes/relic_pedestal.tscn" id="scene_relic"]
+[ext_resource type="PackedScene" uid="uid://c7w3x5y8n2m1q" path="res://scenes/player_3d.tscn" id="scene_player"]
+[ext_resource type="PackedScene" uid="uid://b2k8y1w4m9n3p" path="res://scenes/enemy_skeleton_3d.tscn" id="scene_enemy"]
+[ext_resource type="PackedScene" uid="uid://dmv7k2w9q5n1r" path="res://scenes/npc_crypt_master.tscn" id="scene_npc"]
+[ext_resource type="PackedScene" uid="uid://c8n1m4q7y9w2p" path="res://scenes/rpg_hud_3d.tscn" id="scene_hud"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/dungeon_ambient.wav" id="audio_ambient"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(22, 0.4, 22)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_h"]
+size = Vector3(22, 5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_v"]
+size = Vector3(1, 5, 22)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pillar"]
+height = 4.2
+radius = 0.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_chest_solid"]
+size = Vector3(1.3, 0.9, 0.9)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_chest_interact"]
+height = 2.0
+radius = 2.4
+
+[node name="Dungeon3D" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+camera_attributes = ExtResource("3_cam_attr")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, 0.32899, -0.469846, 0, 0.819152, 0.573576, 0.573576, -0.469846, 0.67101, 0, 10, 0)
+light_color = Color(0.9, 0.82, 0.72, 1)
+light_energy = 0.75
+shadow_enabled = true
+shadow_bias = 0.03
+directional_shadow_max_distance = 45.0
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("audio_ambient")
+volume_db = -6.0
+autoplay = true
+
+[node name="Architecture" type="Node3D" parent="."]
+
+[node name="FloorColliders" type="StaticBody3D" parent="Architecture"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="FloorShape" type="CollisionShape3D" parent="Architecture/FloorColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallColliders" type="StaticBody3D" parent="Architecture"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="NorthWall" type="CollisionShape3D" parent="Architecture/WallColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -10.5)
+shape = SubResource("BoxShape3D_wall_h")
+
+[node name="SouthWall" type="CollisionShape3D" parent="Architecture/WallColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 10.5)
+shape = SubResource("BoxShape3D_wall_h")
+
+[node name="WestWall" type="CollisionShape3D" parent="Architecture/WallColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 2.5, 0)
+shape = SubResource("BoxShape3D_wall_v")
+
+[node name="EastWall" type="CollisionShape3D" parent="Architecture/WallColliders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 2.5, 0)
+shape = SubResource("BoxShape3D_wall_v")
+
+[node name="FloorGrid" type="Node3D" parent="Architecture"]
+"""
+
+# 5x5 tiles
+cols = [-8, -4, 0, 4, 8]
+rows = [-8, -4, 0, 4, 8]
+
+for r_idx, z in enumerate(rows):
+    for c_idx, x in enumerate(cols):
+        tile_name = f"Floor_{c_idx}_{r_idx}"
+        # Some broken rocks for visual texture variety
+        if (c_idx == 1 and r_idx == 1) or (c_idx == 3 and r_idx == 3):
+            tscn_content += f"""
+[node name="{tile_name}" parent="Architecture/FloorGrid" instance=ExtResource("mod_floor_rocks")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, 0, {z})
+"""
+        else:
+            tscn_content += f"""
+[node name="{tile_name}" parent="Architecture/FloorGrid" instance=ExtResource("mod_floor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, 0, {z})
+"""
+
+tscn_content += """
+[node name="Walls" type="Node3D" parent="Architecture"]
+"""
+
+# North walls at Z = -10
+for i, x in enumerate([-8, -4, 0, 4, 8]):
+    res = "mod_wall_arched" if x == 0 else "mod_wall"
+    tscn_content += f"""
+[node name="Wall_North_{i}" parent="Architecture/Walls" instance=ExtResource("{res}")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {x}, 0, -10)
+"""
+
+# Note : Pas de murs au sud (Z = 10) pour laisser la vue caméra isométrique dégagée comme dans Octopath / Diablo !
+
+# West walls at X = -10 (rotated 90 deg)
+for i, z in enumerate([-8, -4, 0, 4, 8]):
+    tscn_content += f"""
+[node name="Wall_West_{i}" parent="Architecture/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10, 0, {z})
+"""
+
+# East walls at X = 10 (rotated -90 deg)
+for i, z in enumerate([-8, -4, 0, 4, 8]):
+    tscn_content += f"""
+[node name="Wall_East_{i}" parent="Architecture/Walls" instance=ExtResource("mod_wall")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 10, 0, {z})
+"""
+
+tscn_content += """
+[node name="Pillars" type="Node3D" parent="Architecture"]
+"""
+
+pillar_coords = [(-4.5, -4.5), (4.5, -4.5), (-4.5, 4.5), (4.5, 4.5)]
+for i, (px, pz) in enumerate(pillar_coords):
+    tscn_content += f"""
+[node name="Pillar_{i}" parent="Architecture/Pillars" instance=ExtResource("mod_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, {px}, 0, {pz})
+
+[node name="SolidCollider" type="StaticBody3D" parent="Architecture/Pillars/Pillar_{i}"]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Architecture/Pillars/Pillar_{i}/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("CylinderShape3D_pillar")
+"""
+
+tscn_content += """
+[node name="Torches" type="Node3D" parent="Architecture"]
+
+[node name="Torch_North_Left" parent="Architecture/Torches" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.8, -9.6)
+
+[node name="Light" type="OmniLight3D" parent="Architecture/Torches/Torch_North_Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.15)
+light_color = Color(1, 0.65, 0.28, 1)
+light_energy = 2.4
+light_volumetric_fog_energy = 1.6
+omni_range = 8.5
+omni_attenuation = 1.2
+script = ExtResource("5_torch_flicker")
+
+[node name="Torch_North_Right" parent="Architecture/Torches" instance=ExtResource("mod_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 1.8, -9.6)
+
+[node name="Light" type="OmniLight3D" parent="Architecture/Torches/Torch_North_Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.15)
+light_color = Color(1, 0.65, 0.28, 1)
+light_energy = 2.4
+light_volumetric_fog_energy = 1.6
+omni_range = 8.5
+omni_attenuation = 1.2
+script = ExtResource("5_torch_flicker")
+
+[node name="Torch_West" parent="Architecture/Torches" instance=ExtResource("mod_torch")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -9.6, 1.8, 0)
+
+[node name="Light" type="OmniLight3D" parent="Architecture/Torches/Torch_West"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.15)
+light_color = Color(1, 0.65, 0.28, 1)
+light_energy = 2.4
+light_volumetric_fog_energy = 1.6
+omni_range = 8.5
+omni_attenuation = 1.2
+script = ExtResource("5_torch_flicker")
+
+[node name="Torch_East" parent="Architecture/Torches" instance=ExtResource("mod_torch")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 9.6, 1.8, 0)
+
+[node name="Light" type="OmniLight3D" parent="Architecture/Torches/Torch_East"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.15)
+light_color = Color(1, 0.65, 0.28, 1)
+light_energy = 2.4
+light_volumetric_fog_energy = 1.6
+omni_range = 8.5
+omni_attenuation = 1.2
+script = ExtResource("5_torch_flicker")
+
+[node name="RelicPedestal" parent="." instance=ExtResource("scene_relic")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="GoldChest" parent="Props" instance=ExtResource("mod_chest")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, -8.2)
+script = ExtResource("8_chest_script")
+
+[node name="SolidCollider" type="StaticBody3D" parent="Props/GoldChest"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Props/GoldChest/SolidCollider"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+shape = SubResource("BoxShape3D_chest_solid")
+
+[node name="InteractableArea" type="Area3D" parent="Props/GoldChest"]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("9_interactable")
+prompt_text = "[E] Ouvrir le Coffre Royal"
+prompt_offset = Vector3(0, 1.3, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Props/GoldChest/InteractableArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CylinderShape3D_chest_interact")
+
+[node name="Barrel_NorthWest" parent="Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, -7.5)
+script = ExtResource("10_barrel_script")
+loot_type = 0
+
+[node name="BarrelStack_NorthEast" parent="Props" instance=ExtResource("mod_barrel_stack")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -7.5)
+script = ExtResource("10_barrel_script")
+loot_type = 1
+
+[node name="Barrel_SouthWest" parent="Props" instance=ExtResource("mod_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 0, 6.5)
+script = ExtResource("10_barrel_script")
+loot_type = 0
+
+[node name="Player3D" parent="." instance=ExtResource("scene_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 3.0)
+
+[node name="HD2DCamera" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
+transform = Transform3D(1, 0, 0, 0, 0.848048, 0.529919, 0, -0.529919, 0.848048, 0, 6.5, 13.0)
+attributes = ExtResource("3_cam_attr")
+fov = 40.0
+script = ExtResource("4_cam_script")
+target = NodePath("../Player3D")
+camera_distance = 11.5
+pitch_angle_degrees = 32.0
+
+[node name="NPCCryptMaster" parent="." instance=ExtResource("scene_npc")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -5.2, 0.05, 2.0)
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="EnemySkeleton_1" parent="Enemies" instance=ExtResource("scene_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0.05, -2.5)
+
+[node name="EnemySkeleton_2" parent="Enemies" instance=ExtResource("scene_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.05, -2.5)
+
+[node name="EnemySkeleton_3" parent="Enemies" instance=ExtResource("scene_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -4.8)
+
+[node name="SupabaseManager" type="Node" parent="."]
+script = ExtResource("6_supabase")
+
+[node name="SentryLogger" type="Node" parent="."]
+script = ExtResource("7_sentry")
+
+[node name="RPGHUD3D" parent="." instance=ExtResource("scene_hud")]
+"""
+
+with open(SCENE_PATH, "w", encoding="utf-8") as f:
+    f.write(tscn_content.strip() + "\n")
+
+print(f"Scène générée avec succès : {SCENE_PATH} ({len(tscn_content)} octets)")

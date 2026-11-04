@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7w3x5y8n2m1q"]
+
+[ext_resource type="Script" path="res://scripts/player/player_3d.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Knight.glb" id="2_knight"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/sword_slash.wav" id="3_sfx_sword"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/footstep_stone.wav" id="4_sfx_step"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+radius = 0.45
+height = 1.8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_attack"]
+height = 1.5
+radius = 1.4
+
+[node name="Player3D" type="CharacterBody3D" groups=["player"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_player")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Knight" parent="Model" instance=ExtResource("2_knight")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+
+[node name="AttackArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0.9)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackArea"]
+shape = SubResource("CylinderShape3D_attack")
+
+[node name="SFXSword" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_sfx_sword")
+volume_db = 2.0
+max_distance = 25.0
+
+[node name="SFXStep" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_sfx_step")
+volume_db = -3.0
+max_distance = 18.0

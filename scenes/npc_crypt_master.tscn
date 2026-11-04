@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3 uid="uid://dmv7k2w9q5n1r"]
+
+[ext_resource type="Script" path="res://scripts/npc/npc_crypt_master.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://assets/models/characters/Mage.glb" id="2_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/npc_greeting.wav" id="3_sfx_greeting"]
+[ext_resource type="Script" path="res://scripts/ai/groq_npc_dialogue.gd" id="4_groq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_npc"]
+size = Vector3(1, 1.8, 1)
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_interact"]
+height = 1.8
+radius = 2.6
+
+[node name="NPCCryptMaster" type="CharacterBody3D" groups=["npc"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("BoxShape3D_npc")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Mage" parent="Model" instance=ExtResource("2_model")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+
+[node name="InteractionArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CylinderShape3D_interact")
+
+[node name="PromptLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2, 0)
+visible = false
+billboard = 1
+double_sided = false
+modulate = Color(1, 0.9, 0.6, 1)
+outline_modulate = Color(0, 0, 0, 1)
+text = "[E] Parler à Maître Eldrin"
+font_size = 28
+outline_size = 6
+
+[node name="SFXGreeting" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_sfx_greeting")
+volume_db = 1.5
+max_distance = 25.0
+
+[node name="GroqDialogue" type="Node" parent="."]
+script = ExtResource("4_groq")
+
+[connection signal="body_entered" from="InteractionArea" to="." method="_on_interaction_area_body_entered"]
+[connection signal="body_exited" from="InteractionArea" to="." method="_on_interaction_area_body_exited"]
