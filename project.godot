@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Godot HD-2D Zero Euro"
 config/description="Pipeline HD-2D et Kitbashing Éclairé piloté par IA et accès étudiants"
-run/main_scene="res://scenes/main_hd2d_scene.tscn"
+run/main_scene="res://demo_hd2d/demo_hd2d.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 

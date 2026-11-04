@@ -1,18 +1,16 @@
 {
   "mcpServers": {
-    "godot-ai": {
-      "command": "npx",
-      "args": ["-y", "@godot-ai/mcp-server"],
-      "env": {
-        "GODOT_PATH": "C:\\Program Files\\Godot\\Godot_v4.3-stable_win64.exe",
-        "PROJECT_PATH": "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\godot-hd2d-pipeline"
-      }
-    },
-    "godot-cli-bridge": {
+    "godot-hd2d-asset-pipeline": {
       "command": "python",
-      "args": ["config/godot_bridge_server.py"],
+      "args": [
+        "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\sprites-sheet-creation\\server.py"
+      ],
       "env": {
-        "PROJECT_DIR": "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\godot-hd2d-pipeline"
+        "PYTHONUNBUFFERED": "1",
+        "GODOT_PROJECT_DIR": "C:\\Users\\AymaneELHOMAIDI\\Desktop\\Projects\\WadWAd\\godot-hd2d-pipeline",
+        "COMFYUI_URL": "http://127.0.0.1:8188",
+        "GOOGLE_CLOUD_PROJECT": "gen-lang-client-0613179957",
+        "GOOGLE_CLOUD_LOCATION": "us-central1"
       }
     }
   }

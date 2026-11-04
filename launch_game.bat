@@ -24,7 +24,7 @@ if not exist "%GODOT_EXE%" (
 
 set "TARGET_SCENE=%~1"
 if "%TARGET_SCENE%"=="" (
-    set "TARGET_SCENE=res://scenes/main_hd2d_scene.tscn"
+    set "TARGET_SCENE=res://demo_hd2d/demo_hd2d.tscn"
 )
 
 cd /d "%PROJECT_DIR%"
